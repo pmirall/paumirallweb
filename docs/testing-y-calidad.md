@@ -29,9 +29,14 @@ El fichero de prueba vive junto al que prueba, con extensión `.test.ts`.
 
 ## Pruebas de integración
 
-También con Vitest, contra una base de datos Postgres real levantada en Docker y
-migrada desde cero en cada arranque. Nada de simular el ORM: una consulta que se
-prueba contra un doble no prueba nada sobre SQL.
+También con Vitest, contra Postgres real y migrado desde cero. No hace falta
+Docker: se usa PGlite, que es Postgres compilado a WASM y corre dentro del propio
+proceso de las pruebas. Nada de simular el ORM, porque una consulta que se prueba
+contra un doble no prueba nada sobre SQL.
+
+Arrancar PGlite cuesta unos segundos, así que se levanta una base por fichero y
+se vacían las tablas entre pruebas en vez de volver a migrar. La diferencia entre
+hacerlo bien y hacerlo mal es de 34 segundos a 7.
 
 Cubren: las funciones de `src/db/queries/`; las Server Actions completas,
 incluida la comprobación de permisos; las reglas de integridad del modelo de

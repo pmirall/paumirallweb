@@ -32,9 +32,9 @@ puesta. Ver `identidad-visual.md`.
 Nadie ve nada al terminar esta fase. Sin ella, todo lo demás se construye sobre
 arena.
 
-Estado: la parte local está hecha y en verde. Falta lo que necesita cuentas
-propias, que es el proyecto de Supabase con Drizzle y sus tres comandos de base
-de datos, y la conexión con Vercel. Tres cosas se decidieron al construirla y no
+Estado: la parte local está hecha y en verde, incluida la base de datos, que
+corre con PGlite. Falta apuntar `DATABASE_URL` a un Supabase real y conectar
+Vercel, y las dos cosas necesitan cuentas propias. Tres cosas se decidieron al construirla y no
 estaban previstas: TypeScript va fijado en la 6, porque Next 15 no admite la 7;
 la configuración va en `next.config.mjs` y no en `.ts`, porque la de TypeScript
 no carga; y el alias `@/` se declara también en esa configuración, porque el
@@ -50,9 +50,15 @@ con `@theme`. Cargar Archivo y Bitter con `next/font`, declarando el ancho 88 de
 Archivo. Copiar la textura de papel y el logotipo de `docs/design/assets/` a
 `public/brand/`, y enganchar el favicon y los iconos en los metadatos.
 
-Crear el proyecto de Supabase, configurar Drizzle, escribir la primera migración
-con las tablas de la fase 1 y dejar `pnpm db:generate`, `pnpm db:migrate` y
-`pnpm db:seed` funcionando.
+Configurar Drizzle, escribir la primera migración con las tablas de la fase 1 y
+dejar `pnpm db:generate`, `pnpm db:migrate` y `pnpm db:seed` funcionando. Crear
+el proyecto de Supabase y apuntar `DATABASE_URL` ahí.
+
+El desarrollo y las pruebas no esperan a Supabase. Se usa PGlite, que es
+Postgres compilado a WASM y corre en el propio proceso, así que no hace falta
+ni Docker ni servidor. El esquema y las migraciones son los mismos que en
+producción, de modo que lo que pasa en las pruebas pasa en Supabase. Cambiar de
+uno a otro es cambiar `DATABASE_URL`.
 
 Montar `src/lib/env.ts` con validación de variables de entorno al arrancar, y
 `.env.example` con todos los nombres.
