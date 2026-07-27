@@ -13,8 +13,13 @@ desplegar.
 Nombre: Pau Miralles. Descriptor: fotógrafo y videógrafo, que en la maqueta
 aparece siempre en mayúsculas y con el espaciado de epígrafe.
 
-En el pie del sitio aparece además PAU MIRALL STUDIO, sin la ese final. Es el
-nombre del estudio y convive con el personal.
+De cara al cliente solo existe Pau Miralles. La maqueta llevaba PAU MIRALL STUDIO
+en el pie y sale, junto con la línea del pie que lo contenía. El nombre del
+estudio no aparece en la web, ni en los metadatos, ni en los correos.
+
+Una excepción que no es de marca sino legal: la factura la emite un proveedor
+certificado y lleva el nombre fiscal que esté dado de alta allí. Eso lo fija la
+configuración fiscal, no este documento.
 
 ## Posicionamiento
 
@@ -33,9 +38,10 @@ de etiqueta.
 Aparte va una llamada a la acción destacada, "Reservar sesión", que se repite en
 la portada junto a "Ver el trabajo".
 
-Hay que decidir a dónde lleva. No existe una ruta `/reservar` en el árbol de
-pantallas, así que apunta a `/contacto`, que es donde se crea el lead. Está
-recogido como discrepancia al final de este documento.
+Lleva a `/contacto`. No hay ruta `/reservar` y no se crea. Cuando se pulsa desde
+una tarjeta de servicio, arrastra el servicio en la query,
+`/contacto?servicio=retrato`, y el formulario llega con ese campo ya elegido.
+Desde la cabecera va sin parámetro.
 
 ## Portada
 
@@ -45,7 +51,10 @@ dos botones: "Ver el trabajo" y "Reservar sesión".
 Sección de selección, con el epígrafe SELECCIÓN, el título "Lo último" y la
 entrada:
 
-> Seis trabajos de los dos últimos años, entre escenario y pista.
+> Tres trabajos de los dos últimos años, entre escenario y pista.
+
+La maqueta decía seis y enseñaba tres. Son tres, y el texto se ajusta a lo que se
+ve.
 
 Y un enlace a "Todo el trabajo". Cada proyecto se muestra con su categoría, su
 año y su título.
@@ -111,6 +120,10 @@ Ubicación: Palma de Mallorca, y viaja
 En la maqueta la etiqueta del teléfono aparece como TELEFONO, sin tilde. Va con
 tilde.
 
+El usuario de Instagram y la dirección de correo llevan la palabra studio dentro.
+Son identificadores de cuentas que ya existen, no decisiones de marca, así que se
+dejan tal cual aunque el nombre del estudio no aparezca en ningún texto.
+
 ## Categorías
 
 Artista, deporte y vídeo. Coinciden con las del árbol de pantallas y con los
@@ -132,20 +145,17 @@ Los textos que se escriban a partir de ahora pasan por la skill `humanizer` y
 tienen que sonar como estos. Si un texto nuevo suena más comercial que la
 maqueta, está mal.
 
-## Discrepancias con el árbol de pantallas
+## Diferencias con la maqueta
 
-Tres cosas no cuadran y hay que decidirlas antes de construir la portada.
+Tres cosas de la maqueta no coincidían con el árbol de pantallas. Están decididas
+y ya recogidas arriba; quedan anotadas aquí para que dentro de un año se sepa por
+qué el sitio no es idéntico a la maqueta.
 
-"Reservar sesión" aparece como llamada a la acción principal en la cabecera y en
-el bloque de portada, pero no hay ruta propia. La opción sensata es que lleve a
-`/contacto` con el servicio preseleccionado, por ejemplo
-`/contacto?servicio=retrato`. Eso no añade rutas y aprovecha el formulario que ya
-crea el lead.
+"Reservar sesión" no tiene ruta propia y lleva a `/contacto`, con el servicio en
+la query cuando se pulsa desde una tarjeta.
 
-La entrada de la sección de selección dice seis trabajos y la maqueta enseña
-tres. El árbol de pantallas dice tres. Si se dejan tres, el texto tiene que
-cambiar; si se dejan seis, cambia la maqueta.
+La selección de la portada son tres proyectos, como decía el árbol, y la entrada
+pasa de decir seis a decir tres.
 
-El nombre del estudio aparece solo en el pie. Falta decidir si entra también en
-los metadatos, en los correos y en la factura, o si de cara al cliente solo
+El nombre del estudio desaparece de la web, pie incluido. De cara al cliente solo
 existe Pau Miralles.

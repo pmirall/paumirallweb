@@ -203,10 +203,6 @@ La primera fase que ve alguien de fuera, y la primera con la marca puesta de
 verdad. El texto con el que sale está en `contenido-de-lanzamiento.md`; no se
 redacta nada nuevo salvo lo que allí falte.
 
-Antes de empezar hay que cerrar las tres discrepancias que ese documento recoge:
-a dónde lleva "Reservar sesión", si la selección de la portada son tres proyectos
-o seis, y si el nombre del estudio aparece fuera del pie.
-
 ### Qué se hace
 
 Layout público con cabecera, pie y navegación.

@@ -37,6 +37,13 @@ siguiente dentro de la misma categoría, y sus propios metadatos de Open Graph.
 El formulario de contacto crea un lead. Protección antispam con campo trampa y
 límite por IP, sin captcha. Si el envío falla, el texto escrito no se pierde.
 
+La llamada a la acción "Reservar sesión", que aparece en la cabecera y en la
+portada, apunta aquí. No hay ruta `/reservar`. Desde una tarjeta de servicio
+arrastra el servicio en la query, `/contacto?servicio=retrato`, y el formulario
+llega con ese campo elegido; desde la cabecera va sin parámetro. El valor se
+valida contra los slugs de `services` y uno desconocido se ignora sin romper la
+página.
+
 ## Zona B, cliente
 
 Layout `(client)`. Sin navegación del sitio público. Cabecera mínima con el
