@@ -50,6 +50,17 @@ La decisión de si el sitio público tiene modo oscuro depende de la guía de ma
 La estructura lo soporta desde el principio; activarlo es cuestión de rellenar el
 bloque oscuro.
 
+## La skill de interfaz
+
+En `.claude/skills/` está instalada `ui-ux-pro-max`, una base de datos de
+patrones de interfaz y experiencia de usuario con soporte para Next.js, Tailwind
+y shadcn/ui. Se invoca antes de construir o revisar cualquier pantalla. La regla
+completa está en `CLAUDE.md`.
+
+Sirve para decidir jerarquía, espaciado, estados, contraste y patrones de
+interacción. No sirve para elegir la paleta ni la tipografía: eso lo decide la
+guía de imagen de marca y entra por `tokens.css`.
+
 ## Inventario de componentes
 
 El admin son veintidós pantallas construidas con los mismos seis componentes

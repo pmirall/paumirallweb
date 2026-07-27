@@ -81,6 +81,8 @@ src/
     auth/             # sesión de admin y sesión de galería
   styles/
 docs/
+.claude/
+  skills/            # skills externas, no se editan aquí
 ```
 
 ## Reglas que no se negocian
@@ -103,6 +105,34 @@ valores y el sitio entero cambia sin tocar componentes. Ver `docs/design-system.
 
 Si necesitas un valor que no existe como token, añade el token. No metas el valor
 suelto.
+
+### Trabajo de interfaz
+
+Antes de construir o revisar interfaz, invoca la skill `ui-ux-pro-max`. Cuenta
+como interfaz crear o refactorizar una pantalla o un componente, decidir
+jerarquía visual, espaciado o disposición, definir estados e interacciones,
+resolver comportamiento responsive, y revisar accesibilidad. Se invoca antes de
+escribir el componente, no después para justificar lo que ya está hecho.
+
+No se invoca para lógica de servidor, consultas, integraciones ni infraestructura.
+Ahí no aporta nada.
+
+Del paquete instalado en `.claude/skills/` se usan tres: `ui-ux-pro-max` para las
+decisiones de interfaz, `ui-styling` para componentes accesibles con Tailwind, y
+`design-system` para la arquitectura de tokens. Las otras cuatro (`design`,
+`brand`, `banner-design`, `slides`) vienen en el paquete y no se usan aquí.
+
+Cuando la skill y la documentación de este repositorio digan cosas distintas,
+gana la documentación de este repositorio. Dos casos concretos que se van a dar:
+
+La skill propone paletas y combinaciones tipográficas. Este proyecto no elige ni
+colores ni tipografías hasta que llegue la guía de imagen de marca, y cuando
+llegue entrarán por `src/styles/tokens.css`. Aprovecha sus recomendaciones de
+estructura, jerarquía, estados, contraste y patrones de interacción, y deja fuera
+los valores concretos de color y de tipografía.
+
+La skill sugiere a veces escribir valores directos en las clases. Aquí no se
+hace, ni siquiera si la sugerencia viene de ella. El valor entra como token.
 
 ### Seguridad
 
