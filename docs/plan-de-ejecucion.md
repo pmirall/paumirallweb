@@ -39,7 +39,8 @@ pnpm. Configurar ESLint, Prettier y el hook de pre-commit.
 
 Copiar `docs/design/tokens.css` a `src/styles/tokens.css` y conectarlo a Tailwind
 con `@theme`. Cargar Archivo y Bitter con `next/font`, declarando el ancho 88 de
-Archivo. Copiar la textura de papel de `docs/design/assets/` a `public/brand/`.
+Archivo. Copiar la textura de papel y el logotipo de `docs/design/assets/` a
+`public/brand/`, y enganchar el favicon y los iconos en los metadatos.
 
 Crear el proyecto de Supabase, configurar Drizzle, escribir la primera migración
 con las tablas de la fase 1 y dejar `pnpm db:generate`, `pnpm db:migrate` y
@@ -148,8 +149,8 @@ niveles, con clasificación de cada carpeta como encargo, contenedor de cliente 
 ignorada, y filtro configurable por tipo de archivo. Ver `drive-inventario.md`.
 
 Generación de derivadas en la cola: miniatura, tamaño web y copia con marca de
-agua. La marca de agua se compone desde un SVG con tokens, para que cambie con la
-marca.
+agua. La marca de agua se compone repitiendo el mosaico de
+`docs/design/assets/logo/marca-de-agua.svg` sobre la variante de tamaño web.
 
 Lectura de Google Calendar para sugerir cliente y fecha a partir de la fecha de
 la carpeta.

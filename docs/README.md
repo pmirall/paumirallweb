@@ -28,6 +28,7 @@ Drive.
 | [seguridad-y-privacidad.md](seguridad-y-privacidad.md) | Accesos, sesiones, protección de datos, RGPD |
 | [identidad-visual.md](identidad-visual.md) | Color, tipografía, forma y movimiento de la marca |
 | [design/tokens.css](design/tokens.css) | El fichero de tokens original |
+| [design/assets/logo/](design/assets/logo/README.md) | Logotipo, isotipo, favicon y marca de agua |
 | [design-system.md](design-system.md) | Método, inventario de componentes, accesibilidad |
 | [contenido-de-lanzamiento.md](contenido-de-lanzamiento.md) | El texto real con el que sale el sitio |
 | [contenido-y-seo.md](contenido-y-seo.md) | Textos, metadatos, sitemap, migración de URLs |

@@ -125,8 +125,8 @@ dudoso, y se decide a mano.
 `Tarjeta de visita 1 front.png` y `Tarjeta de visita 1 back.png`, con sus PSD.
 Son el origen de la paleta de la guía de imagen de marca.
 
-`logo provisional.png`, de 2020 y de 11 KB. Por el nombre y por el peso, no es un
-logotipo definitivo. Sigue haciendo falta un SVG, como dice `identidad-visual.md`.
+`logo provisional.png`, de 2020 y de 11 KB. No se usa: el logotipo del sitio se
+compuso a partir de la tipografía de la marca y está en `design/assets/logo/`.
 
 Un documento llamado `Meet the photographer`, que puede servir de material para
 `/sobre-mi`.

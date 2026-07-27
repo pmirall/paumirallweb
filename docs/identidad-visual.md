@@ -120,20 +120,26 @@ Un papel de 200 por 200 píxeles que se repite cada 110, en
 Se aplica sobre los bloques grandes de color, no sobre el fondo de página entero
 ni sobre las fotografías. Una fotografía no lleva textura encima nunca.
 
+## Logotipo
+
+Está en `design/assets/logo/`, con su propio documento de uso.
+
+No es un dibujo nuevo. Es lo que la guía ya definía, "Pau Miralles" en Archivo
+cursiva 800 con el descriptor en Bitter espaciado hasta igualar el ancho,
+convertido a curvas con las fuentes reales. Así no depende de que la tipografía
+cargue y sirve igual para una cabecera que para un favicon.
+
+Hay logotipo principal, wordmark suelto, isotipo con las iniciales dentro del
+corte de la marca, favicon e iconos, y el mosaico de la marca de agua. El
+logotipo y el wordmark usan `currentColor`, así que no hay una copia por color.
+
+El `logo provisional.png` de 2020 que hay en la carpeta `branding` del Drive
+queda fuera de juego.
+
 ## Qué falta
 
-La guía cubre la web pública. Estas tres cosas no venían y hay que resolverlas
-cuando toque:
-
-El logotipo como archivo. Ahora mismo es texto compuesto con Archivo cursiva 800,
-que funciona en la web pero no sirve para un favicon ni para una marca de agua.
-Hace falta un SVG. En `branding` del Drive hay un fichero llamado
-`logo provisional.png` de 2020, que por el nombre no parece definitivo.
-
-La marca de agua de las galerías con factura pendiente. Se compone con el
-logotipo, así que depende de lo anterior.
-
-La imagen fija de Open Graph para las páginas que no son un proyecto.
+Una sola cosa, y no bloquea nada hasta el lanzamiento: la imagen fija de Open
+Graph para las páginas públicas que no son un proyecto.
 
 ## Reglas al construir
 
