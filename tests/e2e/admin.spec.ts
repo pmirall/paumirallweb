@@ -73,3 +73,45 @@ test('convertir una consulta crea un encargo y la deja convertida', async ({ pag
   // El encargo nuevo existe y lleva el nombre derivado del servicio.
   await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
 })
+
+test('la ficha de encargo tiene sus cinco pestañas y respeta el guardado de entregables', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'muta datos; un solo proyecto')
+
+  await page.goto('/admin/login')
+  await page.getByRole('button', { name: 'Entrar en modo desarrollo' }).click()
+  await page.waitForURL('**/admin')
+
+  await page.goto('/admin/encargos')
+  await page.getByText('Trail Serra de Tramuntana').click()
+  await page.waitForURL(/\/admin\/encargos\/.+/)
+
+  for (const tab of ['Resumen', 'Archivos', 'Galería', 'Dinero', 'Notas']) {
+    await expect(page.getByRole('link', { name: tab })).toBeVisible()
+  }
+
+  // Con un entregable pendiente, pasar a entregado no cambia el estado.
+  await page.locator('#status').selectOption('delivered')
+  await page.getByRole('button', { name: 'Cambiar estado' }).click()
+  await page.waitForLoadState('networkidle')
+  await expect(page.locator('.pm-pagehead__actions').getByText('Editando')).toBeVisible()
+  await expect(page.getByText('no se puede entregar todavía')).toBeVisible()
+})
+
+test('crear un encargo desde el formulario lleva a su ficha', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'muta datos; un solo proyecto')
+
+  await page.goto('/admin/login')
+  await page.getByRole('button', { name: 'Entrar en modo desarrollo' }).click()
+  await page.waitForURL('**/admin')
+
+  await page.goto('/admin/encargos/nuevo')
+  await page.selectOption('#clientId', { label: 'Júlia Ferrer' })
+  await page.fill('input[name="title"]', 'Sesión de estudio')
+  await page.getByRole('button', { name: 'Crear encargo' }).click()
+
+  // La ficha del encargo recién creado, no el 404: prueba el read-after-write.
+  await page.waitForURL(/\/admin\/encargos\/[0-9a-f]{8}-/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Sesión de estudio' })).toBeVisible()
+})

@@ -136,9 +136,21 @@ estado, de clientes con su detalle e historial, y de consultas con su detalle. L
 conversión de consulta en encargo funciona, crea el cliente si no existe, numera
 el código, deja el lead convertido sin borrarlo y registra en `audit_log`.
 
-Falta: el formulario de alta de encargo, la ficha de encargo con sus cinco
-pestañas, el registro de horas, y conectar el Google Sign-In real cuando haya
-credenciales. Las pantallas del alta y la ficha están de momento como marcadores.
+Hecho también: el formulario de alta de encargo y la ficha de encargo con sus
+cinco pestañas. En resumen se cambia el estado, con la regla de que un encargo
+con entregables sin marcar no puede pasar a entregado, y cada cambio deja fila en
+`audit_log`; los entregables se marcan y desmarcan; las notas se guardan. Las
+pestañas de archivos, galería y dinero son marcadores que nombran su fase. Las
+pestañas van en la query, así que el enlace se comparte.
+
+Falta: el registro de horas y conectar el Google Sign-In real cuando haya
+credenciales.
+
+Un fallo que costó encontrar y conviene no repetir: Next empaqueta las páginas y
+las Server Actions por separado, así que con PGlite en fichero cada bundle abría
+su propia conexión, y un encargo recién creado daba 404 al leerlo. La conexión se
+guarda ahora en `globalThis`, una sola para todo el proceso. Con Postgres de
+verdad no habría pasado, pero el singleton es correcto igual.
 
 ### Criterios de aceptación
 

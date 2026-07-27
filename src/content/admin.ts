@@ -104,3 +104,46 @@ export const leadsPage = {
   convertedNotice: 'Esta consulta ya se convirtió en un encargo.',
   goToJob: 'Ver el encargo',
 } as const
+
+export const jobDetail = {
+  tabs: {
+    resumen: 'Resumen',
+    archivos: 'Archivos',
+    galeria: 'Galería',
+    dinero: 'Dinero',
+    notas: 'Notas',
+  },
+  clientLabel: 'Cliente',
+  shootLabel: 'Rodaje',
+  dueLabel: 'Entrega comprometida',
+  deliveredLabel: 'Entregado el',
+  budgetLabel: 'Presupuesto',
+  statusLabel: 'Estado',
+  changeStatus: 'Cambiar estado',
+  statusPending: 'Hay entregables sin marcar, así que no se puede entregar todavía.',
+  deliverablesTitle: 'Entregables',
+  deliverablesEmpty: 'Este encargo no tiene entregables anotados.',
+  deliverableDone: 'Entregado',
+  markDelivered: 'Marcar entregado',
+  markPending: 'Marcar pendiente',
+  notesTitle: 'Notas',
+  notesPlaceholder: 'Lo que quieras recordar de este encargo.',
+  notesSave: 'Guardar notas',
+  filesLaterr: 'La carpeta de Drive vinculada llega en la fase 2.',
+  galleryLater: 'El enlace de galería, el PIN y los favoritos llegan en la fase 4.',
+  moneyLater: 'Presupuesto, factura, gastos y rentabilidad llegan en la fase 5.',
+} as const
+
+export const newJobPage = {
+  title: 'Nuevo encargo',
+  subtitle: 'Alta manual de un encargo en borrador.',
+  clientField: 'Cliente',
+  titleField: 'Título interno',
+  categoryField: 'Tipo',
+  shootField: 'Fecha de rodaje',
+  budgetField: 'Presupuesto sin IVA, en euros',
+  submit: 'Crear encargo',
+  noClients: 'Primero necesitas un cliente. Convierte una consulta o crea uno.',
+  errorClient: 'Elige un cliente.',
+  errorTitle: 'Ponle un título, aunque sea provisional.',
+} as const

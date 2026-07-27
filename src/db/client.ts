@@ -30,13 +30,21 @@ export async function createDatabase() {
   return db
 }
 
-let cached: Promise<Database> | undefined
+/**
+ * Una sola conexión en todo el proceso. Se guarda en globalThis porque Next
+ * empaqueta las páginas y las Server Actions por separado, y con una variable
+ * de módulo normal cada bundle abriría su propia conexión. Con PGlite en
+ * fichero eso significa dos copias en memoria que no ven los cambios de la
+ * otra, así que un encargo recién creado no aparecería al leerlo. Con Postgres
+ * de verdad no pasaría, pero el singleton es correcto en los dos casos.
+ */
+const globalForDb = globalThis as unknown as { __pmDb?: Promise<Database> }
 
 export function db(): Promise<Database> {
-  if (!cached) {
-    cached = createDatabase()
+  if (!globalForDb.__pmDb) {
+    globalForDb.__pmDb = createDatabase()
   }
-  return cached
+  return globalForDb.__pmDb
 }
 
 export { schema }

@@ -1,17 +1,43 @@
+import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { db } from '@/db/client'
-import { getJobWithClient } from '@/db/queries/jobs'
+import { getJobDetail } from '@/db/queries/job-mutations'
+import { hasPendingDeliverables } from '@/db/queries/jobs'
 import { PageHeader } from '@/components/admin/PageHeader'
-import { EmptyState, Tag } from '@/components/ui'
-import { jobCategoryLabels, jobStatusLabels } from '@/content/admin'
+import { EmptyState, Tag, buttonClass } from '@/components/ui'
+import {
+  jobCategoryLabels,
+  jobDetail,
+  jobStatusLabels,
+} from '@/content/admin'
+import { JOB_STATUSES } from '@/db/schema'
+import { formatEuros } from '@/lib/format'
+import { formatDate } from '@/lib/dates'
+import {
+  changeStatusAction,
+  saveNotesAction,
+  toggleDeliverableAction,
+} from './actions'
 
-/** Ficha de encargo. Las cinco pestañas se construyen en el siguiente paso. */
-export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
+const TABS = ['resumen', 'archivos', 'galeria', 'dinero', 'notas'] as const
+type TabKey = (typeof TABS)[number]
+
+export default async function JobDetailPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ id: string }>
+  searchParams: Promise<{ tab?: string }>
+}) {
   const { id } = await params
-  const row = await getJobWithClient(await db(), id)
-  if (!row) notFound()
+  const { tab } = await searchParams
+  const active: TabKey = (TABS as readonly string[]).includes(tab ?? '') ? (tab as TabKey) : 'resumen'
 
-  const { jobs: job, clients: client } = row
+  const database = await db()
+  const detail = await getJobDetail(database, id)
+  if (!detail) notFound()
+  const { job, client, deliverables } = detail
+  const pending = await hasPendingDeliverables(database, id)
 
   return (
     <>
@@ -25,11 +51,138 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           </>
         }
       />
-      <EmptyState
-        level={2}
-        title="Ficha en construcción"
-        body="Las pestañas de resumen, archivos, galería, dinero y notas llegan en el siguiente paso de la fase 1."
-      />
+
+      {/* Las pestañas van en la query, no en segmentos de ruta, para que el
+          enlace se pueda compartir. Ver docs/mapa-de-rutas.md. */}
+      <nav className="pm-tabs" aria-label="Secciones del encargo">
+        {TABS.map((key) => (
+          <Link
+            key={key}
+            className="pm-tab pm-hit"
+            href={`/admin/encargos/${id}?tab=${key}`}
+            aria-current={active === key ? 'page' : undefined}
+          >
+            {jobDetail.tabs[key]}
+          </Link>
+        ))}
+      </nav>
+
+      {active === 'resumen' ? (
+        <div className="pm-detail">
+          <dl className="pm-detail__facts">
+            <div>
+              <dt>{jobDetail.clientLabel}</dt>
+              <dd>
+                <Link className="pm-hit" href={`/admin/clientes/${client.id}`}>
+                  {client.name}
+                </Link>
+              </dd>
+            </div>
+            <div>
+              <dt>{jobDetail.shootLabel}</dt>
+              <dd>{formatDate(job.shootDate)}</dd>
+            </div>
+            <div>
+              <dt>{jobDetail.dueLabel}</dt>
+              <dd>{formatDate(job.dueDate)}</dd>
+            </div>
+            <div>
+              <dt>{jobDetail.budgetLabel}</dt>
+              <dd>{job.budgetCents != null ? formatEuros(job.budgetCents) : '—'}</dd>
+            </div>
+            {job.deliveredAt ? (
+              <div>
+                <dt>{jobDetail.deliveredLabel}</dt>
+                <dd>{formatDate(job.deliveredAt)}</dd>
+              </div>
+            ) : null}
+          </dl>
+
+          <form action={changeStatusAction.bind(null, id)} className="pm-statusform">
+            <label className="pm-field__label" htmlFor="status">
+              {jobDetail.changeStatus}
+            </label>
+            <div className="pm-statusform__row">
+              <select className="pm-field__input" id="status" name="status" defaultValue={job.status}>
+                {JOB_STATUSES.map((s) => (
+                  <option key={s} value={s}>
+                    {jobStatusLabels[s]}
+                  </option>
+                ))}
+              </select>
+              <button className={buttonClass('primary', true)} type="submit">
+                {jobDetail.changeStatus}
+              </button>
+            </div>
+            {pending ? (
+              <p className="pm-field__hint" role="note">
+                {jobDetail.statusPending}
+              </p>
+            ) : null}
+          </form>
+
+          <section className="pm-panel">
+            <h2 className="pm-panel__title">{jobDetail.deliverablesTitle}</h2>
+            {deliverables.length === 0 ? (
+              <EmptyState
+                level={3}
+                title={jobDetail.deliverablesTitle}
+                body={jobDetail.deliverablesEmpty}
+              />
+            ) : (
+              <ul className="pm-checklist">
+                {deliverables.map((item) => (
+                  <li key={item.id} className="pm-checklist__item">
+                    <span>
+                      {item.description}
+                      {item.quantity ? ` · ${item.quantity}` : ''}
+                    </span>
+                    <form
+                      action={toggleDeliverableAction.bind(null, id, item.id, !item.delivered)}
+                    >
+                      <button
+                        className={item.delivered ? 'pm-check is-done' : 'pm-check'}
+                        type="submit"
+                      >
+                        {item.delivered ? jobDetail.deliverableDone : jobDetail.markDelivered}
+                      </button>
+                    </form>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+        </div>
+      ) : null}
+
+      {active === 'archivos' ? (
+        <EmptyState level={2} title={jobDetail.tabs.archivos} body={jobDetail.filesLaterr} />
+      ) : null}
+      {active === 'galeria' ? (
+        <EmptyState level={2} title={jobDetail.tabs.galeria} body={jobDetail.galleryLater} />
+      ) : null}
+      {active === 'dinero' ? (
+        <EmptyState level={2} title={jobDetail.tabs.dinero} body={jobDetail.moneyLater} />
+      ) : null}
+
+      {active === 'notas' ? (
+        <form action={saveNotesAction.bind(null, id)} className="pm-notesform">
+          <label className="pm-field__label" htmlFor="notes">
+            {jobDetail.notesTitle}
+          </label>
+          <textarea
+            className="pm-field__input pm-field__input--area"
+            id="notes"
+            name="notes"
+            rows={8}
+            defaultValue={job.internalNotes ?? ''}
+            placeholder={jobDetail.notesPlaceholder}
+          />
+          <button className={buttonClass('primary', true)} type="submit">
+            {jobDetail.notesSave}
+          </button>
+        </form>
+      ) : null}
     </>
   )
 }

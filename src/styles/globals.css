@@ -1203,3 +1203,67 @@ body {
   .pm-detail__message { border-top: var(--border-w) solid var(--border-hairline); padding-top: var(--sp-5); }
   .pm-pagehead__actions .pm-tag { vertical-align: middle; }
 }
+
+
+/* --- pestañas y controles de la ficha de encargo --- */
+@layer components {
+  .pm-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-1);
+    border-bottom: var(--border-w) solid var(--border-hairline);
+    margin-bottom: var(--sp-6);
+  }
+  .pm-tab {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: var(--sp-4);
+    text-decoration: none;
+    color: var(--text-muted);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-body-s);
+    font-stretch: 88%;
+    border-bottom: var(--border-w-thick) solid transparent;
+    margin-bottom: calc(var(--border-w) * -1);
+    transition: color var(--dur) var(--ease-out);
+  }
+  .pm-tab:hover { color: var(--pm-ink); }
+  .pm-tab[aria-current='page'] { color: var(--pm-ink); border-bottom-color: var(--pm-teal); }
+
+  .pm-statusform { margin-bottom: var(--sp-6); }
+  .pm-statusform__row { display: flex; gap: var(--sp-3); align-items: stretch; margin-top: var(--sp-2); }
+  .pm-statusform__row .pm-field__input { max-width: 280px; }
+
+  .pm-checklist { list-style: none; margin: 0; padding: 0; }
+  .pm-checklist__item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--sp-4);
+    min-height: var(--row-h);
+    padding: var(--sp-2) 0;
+    border-bottom: 1px solid var(--border-hairline);
+    font-size: var(--fs-body-s);
+  }
+  .pm-check {
+    min-height: 36px;
+    padding-inline: var(--sp-3);
+    border: var(--border-w) solid var(--border-strong);
+    background: var(--surface-card);
+    cursor: pointer;
+    font-family: var(--font-ui);
+    font-weight: var(--fw-bold);
+    font-size: var(--fs-caption);
+    font-stretch: 88%;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    clip-path: var(--clip-chevron-xs);
+  }
+  .pm-check.is-done { background: var(--state-ok-surface); color: var(--pm-emerald-dark); border-color: var(--pm-emerald-dark); }
+
+  .pm-notesform, .pm-formwrap { max-width: var(--maxw-prose); }
+  .pm-notesform { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .pm-notesform .pm-btn { align-self: flex-start; }
+}

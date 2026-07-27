@@ -1,16 +1,23 @@
+import { db } from '@/db/client'
+import { listClientsForSelect } from '@/db/queries/job-mutations'
 import { PageHeader } from '@/components/admin/PageHeader'
 import { EmptyState } from '@/components/ui'
+import { newJobPage } from '@/content/admin'
+import { NewJobForm } from './NewJobForm'
 
-/** Alta de encargo. El formulario completo llega más adelante en la fase 1. */
-export default function NewJobPage() {
+export default async function NewJobPage() {
+  const clients = await listClientsForSelect(await db())
+
   return (
     <>
-      <PageHeader title="Nuevo encargo" subtitle="Alta manual de un encargo." />
-      <EmptyState
-        level={2}
-        title="En construcción"
-        body="El formulario de alta llega en el siguiente paso de la fase 1. Por ahora, los encargos se crean convirtiendo una consulta."
-      />
+      <PageHeader title={newJobPage.title} subtitle={newJobPage.subtitle} />
+      {clients.length === 0 ? (
+        <EmptyState level={2} title={newJobPage.title} body={newJobPage.noClients} />
+      ) : (
+        <div className="pm-formwrap">
+          <NewJobForm clients={clients} />
+        </div>
+      )}
     </>
   )
 }
