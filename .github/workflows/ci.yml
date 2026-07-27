@@ -37,3 +37,29 @@ jobs:
       - run: pnpm test:e2e
         env:
           SITE_URL: http://127.0.0.1:3000
+
+  lighthouse:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+        env:
+          SITE_URL: http://127.0.0.1:3000
+      # Umbrales que bloquean, no que avisan. Ver docs/testing-y-calidad.md.
+      - uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: |
+            http://127.0.0.1:3000/
+            http://127.0.0.1:3000/trabajo/julia-ferrer
+          budgetPath: ./lighthouse-budget.json
+          configPath: ./lighthouserc.json
+          startServerCommand: pnpm start
+          startServerReadyPattern: 'Ready in'
+          uploadArtifacts: true

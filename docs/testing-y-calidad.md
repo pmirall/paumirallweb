@@ -77,17 +77,27 @@ depender del estado que haya dejado el anterior.
 ## Accesibilidad
 
 Comprobación automática con axe integrada en las pruebas de Playwright, sobre las
-pantallas públicas y sobre la galería del cliente. Un fallo de contraste o una
-imagen sin texto alternativo rompe la construcción.
+pantallas públicas y sobre la galería del cliente, contra las reglas de WCAG 2.1
+en nivel AA. Un fallo de contraste o una imagen sin texto alternativo rompe la
+construcción.
+
+Las apariciones al hacer scroll arrancan ocultas, y axe las leería como
+invisibles, así que la prueba las revela antes de analizar. Si no, la mitad de la
+página no se comprueba y el resultado en verde no significa nada.
+
+Hay además dos pruebas de teclado: una recorre la portada tabulando y verifica
+que el foco avanza y que nunca se queda sin contorno visible, y otra comprueba
+que el formulario de contacto se rellena sin tocar el ratón.
 
 Lo automático no lo detecta todo. Antes del lanzamiento se recorren las cinco
-pantallas que importan solo con teclado y con un lector de pantalla.
+pantallas que importan con un lector de pantalla.
 
 ## Rendimiento
 
 Lighthouse en CI sobre `/` y sobre una ficha de proyecto, con umbrales que
 bloquean: rendimiento por encima de 90, accesibilidad por encima de 95,
-posicionamiento por encima de 95.
+posicionamiento por encima de 95. La configuración está en `lighthouserc.json` y
+el presupuesto de LCP y CLS en `lighthouse-budget.json`.
 
 Además, dos medidas propias que Lighthouse no da: el tiempo hasta que se ve la
 primera fila de fotos en una galería de 300 imágenes, y el tiempo hasta el primer
