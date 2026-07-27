@@ -2,6 +2,7 @@ import Link from 'next/link'
 import { notFound } from 'next/navigation'
 import { db } from '@/db/client'
 import { getJobDetail } from '@/db/queries/job-mutations'
+import { listTimeEntries, totalMinutesByJob } from '@/db/queries/time-entries'
 import { hasPendingDeliverables } from '@/db/queries/jobs'
 import { PageHeader } from '@/components/admin/PageHeader'
 import { EmptyState, Tag, buttonClass } from '@/components/ui'
@@ -10,10 +11,11 @@ import {
   jobDetail,
   jobStatusLabels,
 } from '@/content/admin'
-import { JOB_STATUSES } from '@/db/schema'
+import { JOB_STATUSES, TIME_ENTRY_KINDS } from '@/db/schema'
 import { formatEuros } from '@/lib/format'
-import { formatDate } from '@/lib/dates'
+import { formatDate, formatDuration } from '@/lib/dates'
 import {
+  addTimeAction,
   changeStatusAction,
   saveNotesAction,
   toggleDeliverableAction,
@@ -38,6 +40,8 @@ export default async function JobDetailPage({
   if (!detail) notFound()
   const { job, client, deliverables } = detail
   const pending = await hasPendingDeliverables(database, id)
+  const timeEntries = await listTimeEntries(database, id)
+  const totalMinutes = await totalMinutesByJob(database, id)
 
   return (
     <>
@@ -147,6 +151,65 @@ export default async function JobDetailPage({
                         {item.delivered ? jobDetail.deliverableDone : jobDetail.markDelivered}
                       </button>
                     </form>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section className="pm-panel">
+            <div className="pm-time-head">
+              <h2 className="pm-panel__title">{jobDetail.timeTitle}</h2>
+              <span className="pm-time-total">
+                {jobDetail.timeTotal}: <strong>{formatDuration(totalMinutes)}</strong>
+              </span>
+            </div>
+
+            <form action={addTimeAction.bind(null, id)} className="pm-timeform">
+              <label className="pm-timeform__field">
+                <span className="pm-field__label">{jobDetail.timeDate}</span>
+                <input className="pm-field__input" type="date" name="date" required />
+              </label>
+              <label className="pm-timeform__field">
+                <span className="pm-field__label">{jobDetail.timeMinutes}</span>
+                <input
+                  className="pm-field__input"
+                  type="number"
+                  name="minutes"
+                  inputMode="numeric"
+                  min={1}
+                  required
+                />
+              </label>
+              <label className="pm-timeform__field">
+                <span className="pm-field__label">{jobDetail.timeKind}</span>
+                <select className="pm-field__input" name="kind" defaultValue="shoot">
+                  {TIME_ENTRY_KINDS.map((k) => (
+                    <option key={k} value={k}>
+                      {jobDetail.timeKinds[k]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button className={buttonClass('primary', true)} type="submit">
+                {jobDetail.timeAdd}
+              </button>
+            </form>
+
+            {timeEntries.length === 0 ? (
+              <p className="pm-field__hint">{jobDetail.timeEmpty}</p>
+            ) : (
+              <ul className="pm-list">
+                {timeEntries.map((entry) => (
+                  <li key={entry.id} className="pm-list__item">
+                    <div>
+                      <span className="pm-list__title">{formatDuration(entry.minutes)}</span>
+                      <span className="pm-list__meta">
+                        {jobDetail.timeKinds[entry.kind]}
+                        {entry.note ? ` · ${entry.note}` : ''}
+                      </span>
+                    </div>
+                    <span className="pm-list__date">{formatDate(entry.date)}</span>
                   </li>
                 ))}
               </ul>

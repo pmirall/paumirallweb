@@ -143,8 +143,12 @@ con entregables sin marcar no puede pasar a entregado, y cada cambio deja fila e
 pestañas de archivos, galería y dinero son marcadores que nombran su fase. Las
 pestañas van en la query, así que el enlace se comparte.
 
-Falta: el registro de horas y conectar el Google Sign-In real cuando haya
-credenciales.
+El registro de horas está en la pestaña de resumen de la ficha: total dedicado,
+alta rápida de día, minutos y tipo pensada para el móvil, y la lista. Es la mitad
+del cálculo de euros por hora que llega en la fase 5.
+
+Falta solo conectar el Google Sign-In real cuando haya credenciales. Con eso, la
+fase 1 está entera salvo esa conexión.
 
 Un fallo que costó encontrar y conviene no repetir: Next empaqueta las páginas y
 las Server Actions por separado, así que con PGlite en fichero cada bundle abría

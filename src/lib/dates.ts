@@ -19,3 +19,12 @@ export function formatDate(value: string | Date | null): string {
 export function todayIso(now: Date): string {
   return now.toISOString().slice(0, 10)
 }
+
+/** Minutos como "2 h 30 min", para el registro de horas. */
+export function formatDuration(minutes: number): string {
+  const h = Math.floor(minutes / 60)
+  const m = minutes % 60
+  if (h === 0) return `${m} min`
+  if (m === 0) return `${h} h`
+  return `${h} h ${m} min`
+}

@@ -115,3 +115,24 @@ test('crear un encargo desde el formulario lleva a su ficha', async ({ page }, t
   await page.waitForURL(/\/admin\/encargos\/[0-9a-f]{8}-/)
   await expect(page.getByRole('heading', { level: 1, name: 'Sesión de estudio' })).toBeVisible()
 })
+
+test('anotar horas suma al total del encargo', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'muta datos; un solo proyecto')
+
+  await page.goto('/admin/login')
+  await page.getByRole('button', { name: 'Entrar en modo desarrollo' }).click()
+  await page.waitForURL('**/admin')
+
+  await page.goto('/admin/encargos')
+  await page.getByText('Trail Serra de Tramuntana').click()
+  await page.waitForURL(/\/admin\/encargos\/.+/)
+
+  const before = await page.locator('.pm-time-total strong').textContent()
+  await page.fill('input[name="date"]', '2026-05-20')
+  await page.fill('input[name="minutes"]', '60')
+  await page.getByRole('button', { name: 'Anotar' }).click()
+  await page.waitForLoadState('networkidle')
+
+  // El total cambia, así que la nueva hora se ha guardado.
+  await expect(page.locator('.pm-time-total strong')).not.toHaveText(before ?? '')
+})

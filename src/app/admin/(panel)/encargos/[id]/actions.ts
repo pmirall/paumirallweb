@@ -8,8 +8,9 @@ import {
   setDeliverableDelivered,
   updateJobNotes,
 } from '@/db/queries/job-mutations'
+import { addTimeEntry } from '@/db/queries/time-entries'
 import { ADMIN_COOKIE, verifySession } from '@/lib/auth/admin'
-import { JOB_STATUSES, type JobStatus } from '@/db/schema'
+import { JOB_STATUSES, TIME_ENTRY_KINDS, type JobStatus, type TimeEntryKind } from '@/db/schema'
 
 async function requireEmail(): Promise<string> {
   const store = await cookies()
@@ -40,5 +41,25 @@ export async function toggleDeliverableAction(
 export async function saveNotesAction(jobId: string, formData: FormData) {
   await requireEmail()
   await updateJobNotes(await db(), jobId, String(formData.get('notes') ?? ''))
+  revalidatePath(`/admin/encargos/${jobId}`)
+}
+
+export async function addTimeAction(jobId: string, formData: FormData) {
+  await requireEmail()
+  const minutes = Number(formData.get('minutes'))
+  const date = String(formData.get('date') ?? '')
+  const kindRaw = String(formData.get('kind') ?? '')
+  const kind = (TIME_ENTRY_KINDS as readonly string[]).includes(kindRaw)
+    ? (kindRaw as TimeEntryKind)
+    : 'shoot'
+  // Un registro sin minutos o sin día no se guarda, sin ceremonia.
+  if (!date || !Number.isFinite(minutes) || minutes <= 0) return
+  await addTimeEntry(await db(), {
+    jobId,
+    date,
+    minutes: Math.round(minutes),
+    kind,
+    note: String(formData.get('note') ?? '') || undefined,
+  })
   revalidatePath(`/admin/encargos/${jobId}`)
 }
