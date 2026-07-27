@@ -128,6 +128,18 @@ Registro de horas, con un alta que funcione bien desde el móvil.
 
 Un dashboard mínimo en `/admin` con encargos activos y próximos rodajes.
 
+### Estado de la fase 1
+
+Hecho y en verde: el acceso con la sesión firmada y el 404 del gate, el panel con
+sus métricas y listas leyendo de la base, las listas de encargos con filtro por
+estado, de clientes con su detalle e historial, y de consultas con su detalle. La
+conversión de consulta en encargo funciona, crea el cliente si no existe, numera
+el código, deja el lead convertido sin borrarlo y registra en `audit_log`.
+
+Falta: el formulario de alta de encargo, la ficha de encargo con sus cinco
+pestañas, el registro de horas, y conectar el Google Sign-In real cuando haya
+credenciales. Las pantallas del alta y la ficha están de momento como marcadores.
+
 ### Criterios de aceptación
 
 Un correo no autorizado que inicia sesión con Google recibe 404 en `/admin`.

@@ -63,3 +63,44 @@ export const leadStatusLabels: Record<string, string> = {
   converted: 'Convertida',
   discarded: 'Descartada',
 }
+
+export const jobsPage = {
+  title: 'Encargos',
+  subtitle: 'Todo el trabajo, abierto y cerrado.',
+  newJob: 'Nuevo encargo',
+  filterAll: 'Todos',
+  empty: 'Todavía no hay encargos. Convierte una consulta o crea uno a mano.',
+  columns: {
+    code: 'Código',
+    title: 'Encargo',
+    client: 'Cliente',
+    category: 'Tipo',
+    status: 'Estado',
+    shoot: 'Rodaje',
+    budget: 'Presupuesto',
+  },
+} as const
+
+export const clientsPage = {
+  title: 'Clientes',
+  subtitle: 'Quién te ha contratado.',
+  empty: 'Aún no hay clientes. Aparecen al convertir una consulta o crear un encargo.',
+  columns: { name: 'Nombre', company: 'Empresa', email: 'Correo', jobs: 'Encargos' },
+  detailSubtitle: 'Historial y facturación acumulada.',
+  billedLabel: 'Presupuestado acumulado',
+  jobsTitle: 'Encargos',
+  noJobs: 'Este cliente todavía no tiene encargos.',
+} as const
+
+export const leadsPage = {
+  title: 'Consultas',
+  subtitle: 'Lo que llega por el formulario.',
+  empty: 'La bandeja está vacía.',
+  columns: { name: 'Nombre', service: 'Servicio', status: 'Estado', date: 'Fecha' },
+  detailSubtitle: 'Convierte la consulta en un encargo cuando estés listo.',
+  messageLabel: 'Mensaje',
+  contactLabel: 'Contacto',
+  convert: 'Convertir en encargo',
+  convertedNotice: 'Esta consulta ya se convirtió en un encargo.',
+  goToJob: 'Ver el encargo',
+} as const

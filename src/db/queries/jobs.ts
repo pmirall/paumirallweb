@@ -9,8 +9,8 @@ import { clients, deliverables, jobPublications, jobs, timeEntries } from '../sc
  */
 type Db = Database | TestDatabase
 
-export async function listJobs(db: Db) {
-  return db
+export async function listJobs(db: Db, status?: string) {
+  const rows = db
     .select({
       id: jobs.id,
       code: jobs.code,
@@ -18,11 +18,16 @@ export async function listJobs(db: Db) {
       status: jobs.status,
       category: jobs.category,
       shootDate: jobs.shootDate,
+      budgetCents: jobs.budgetCents,
       clientName: clients.name,
     })
     .from(jobs)
     .innerJoin(clients, eq(jobs.clientId, clients.id))
     .orderBy(desc(jobs.shootDate))
+  if (status) {
+    return rows.where(eq(jobs.status, status as never))
+  }
+  return rows
 }
 
 export async function getJobWithClient(db: Db, id: string) {

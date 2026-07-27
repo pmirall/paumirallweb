@@ -1185,3 +1185,21 @@ body {
   .pm-tr__link:hover { color: var(--pm-emerald-dark); }
   .pm-td--end { text-align: end; }
 }
+
+
+/* --- detalle de consulta y fichas del admin --- */
+@layer components {
+  .pm-detail { display: flex; flex-direction: column; gap: var(--sp-6); max-width: var(--maxw-prose); }
+  .pm-detail__facts { display: flex; flex-wrap: wrap; gap: var(--sp-5); margin: 0; }
+  .pm-detail__facts dt {
+    font: var(--type-eyebrow);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--pm-emerald-dark);
+    margin-bottom: var(--sp-1);
+  }
+  .pm-detail__facts dd { margin: 0; font-weight: var(--fw-semibold); font-size: var(--fs-body-s); }
+  .pm-detail__facts a { color: var(--pm-ink); }
+  .pm-detail__message { border-top: var(--border-w) solid var(--border-hairline); padding-top: var(--sp-5); }
+  .pm-pagehead__actions .pm-tag { vertical-align: middle; }
+}

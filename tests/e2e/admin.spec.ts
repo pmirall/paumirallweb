@@ -38,3 +38,38 @@ test('salir cierra la sesión y vuelve a bloquear el panel', async ({ page }) =>
   const response = await page.request.get('/admin')
   expect(response.status()).toBe(404)
 })
+
+test('las listas del admin muestran los datos sembrados', async ({ page }) => {
+  await page.goto('/admin/login')
+  await page.getByRole('button', { name: 'Entrar en modo desarrollo' }).click()
+  await page.waitForURL('**/admin')
+
+  await page.goto('/admin/encargos')
+  await expect(page.getByRole('heading', { level: 1, name: 'Encargos' })).toBeVisible()
+  await expect(page.getByText('Trail Serra de Tramuntana')).toBeVisible()
+
+  await page.goto('/admin/clientes')
+  await expect(page.getByText('Júlia Ferrer')).toBeVisible()
+
+  await page.goto('/admin/leads')
+  await expect(page.getByText('Marta Vidal')).toBeVisible()
+})
+
+// Esta prueba muta la base. Los dos proyectos comparten servidor y base local,
+// así que se ejecuta en uno solo para no competir consigo misma.
+test('convertir una consulta crea un encargo y la deja convertida', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'muta datos; un solo proyecto')
+  await page.goto('/admin/login')
+  await page.getByRole('button', { name: 'Entrar en modo desarrollo' }).click()
+  await page.waitForURL('**/admin')
+
+  await page.goto('/admin/leads')
+  await page.getByText('Pep Sastre').click()
+  await page.waitForURL(/\/admin\/leads\/.+/)
+  await expect(page.getByRole('heading', { level: 1, name: 'Pep Sastre' })).toBeVisible()
+
+  await page.getByRole('button', { name: 'Convertir en encargo' }).click()
+  await page.waitForURL(/\/admin\/encargos\/.+/)
+  // El encargo nuevo existe y lleva el nombre derivado del servicio.
+  await expect(page.getByRole('heading', { level: 1 })).toBeVisible()
+})
