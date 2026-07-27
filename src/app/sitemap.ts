@@ -1,11 +1,12 @@
 import type { MetadataRoute } from 'next'
 import { env } from '@/lib/env'
-import { projects } from '@/lib/projects'
+import { listProjects } from '@/lib/projects'
 import { legalPages } from '@/content/pages'
 
 /** Se genera desde los datos, no a mano. Ver docs/contenido-y-seo.md. */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = env.SITE_URL.replace(/\/$/, '')
+  const projects = await listProjects()
   const routes = ['', '/trabajo', '/servicios', '/sobre-mi', '/contacto']
   const legal = Object.keys(legalPages).map((slug) => `/legal/${slug}`)
 

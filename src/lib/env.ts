@@ -48,6 +48,17 @@ export function requireDatabaseUrl(): string {
   return env.DATABASE_URL
 }
 
+/**
+ * En un despliegue real, DATABASE_URL es obligatoria: no se corre contra la
+ * base local efímera en producción. El distintivo no es NODE_ENV, porque
+ * `next start` en las pruebas de extremo a extremo también es producción y allí
+ * sí se usa PGlite. El distintivo es Vercel, que fija VERCEL=1 al desplegar.
+ */
+const isVercelDeploy = process.env.VERCEL === '1'
+if (isVercelDeploy && !env.DATABASE_URL) {
+  throw new Error('Falta DATABASE_URL. En el despliegue la base de datos es obligatoria.')
+}
+
 export const adminAllowedEmails = (env.ADMIN_ALLOWED_EMAILS ?? '')
   .split(',')
   .map((e) => e.trim().toLowerCase())

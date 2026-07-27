@@ -1,9 +1,11 @@
 import Link from 'next/link'
 import { Eyebrow, Plate, Tag } from '@/components/ui'
 import { work } from '@/content/landing'
-import { featuredProjects } from '@/lib/projects'
+import { listFeaturedProjects } from '@/lib/projects'
 
-export function Work() {
+export async function Work() {
+  const projects = await listFeaturedProjects()
+
   return (
     <section className="pm-slab pm-on-bone" id="trabajo" aria-labelledby="pm-work-title">
       <div className="pm-wrap">
@@ -19,7 +21,7 @@ export function Work() {
         </div>
 
         <div className="pm-work">
-          {featuredProjects.map((project, i) => (
+          {projects.map((project, i) => (
             <Link
               className="pm-work__item pm-rise"
               data-d={i + 1}
@@ -33,7 +35,7 @@ export function Work() {
                 alt={project.coverAlt}
               />
               <div className="pm-work__meta">
-                <Tag tone="accent">{project.category}</Tag>
+                <Tag tone="accent">{project.categoryLabel}</Tag>
                 <span className="pm-work__year">{project.year}</span>
               </div>
               <h3 className="pm-work__title">{project.title}</h3>

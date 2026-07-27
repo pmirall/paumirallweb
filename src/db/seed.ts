@@ -1,4 +1,3 @@
-import { requireDatabaseUrl } from '@/lib/env'
 import { createDatabase } from './client'
 import { clients, deliverables, jobPublications, jobs, leads, timeEntries } from './schema'
 
@@ -7,7 +6,7 @@ import { clients, deliverables, jobPublications, jobs, leads, timeEntries } from
  * Cubre todos los estados de encargo para que las pantallas del admin tengan
  * algo que enseñar. Ver docs/testing-y-calidad.md.
  */
-export async function seed(db: ReturnType<typeof createDatabase>) {
+export async function seed(db: Awaited<ReturnType<typeof createDatabase>>) {
   const inserted = await db
     .insert(clients)
     .values([
@@ -135,7 +134,7 @@ export async function seed(db: ReturnType<typeof createDatabase>) {
 }
 
 async function main() {
-  await seed(createDatabase(requireDatabaseUrl()))
+  await seed(await createDatabase())
   process.stdout.write('Datos de ejemplo cargados.\n')
 }
 

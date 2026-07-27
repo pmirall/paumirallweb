@@ -1,67 +1,68 @@
-/**
- * Los proyectos publicados. En la fase 3 esto pasa a ser una consulta a
- * job_publications; la forma del dato ya es la definitiva para que el cambio
- * no toque los componentes.
- */
-export const CATEGORIES = ['Artista', 'Deporte', 'Vídeo'] as const
-export type Category = (typeof CATEGORIES)[number]
+import { unstable_cache } from 'next/cache'
+import { db } from '@/db/client'
+import { getPublishedProjectBySlug, getPublishedProjects } from '@/db/queries/jobs'
+import type { JobCategory } from '@/db/schema'
 
-/** El slug de la URL va en minúsculas y sin acentos. */
-export const CATEGORY_SLUGS: Record<Category, string> = {
-  Artista: 'artista',
-  Deporte: 'deporte',
-  'Vídeo': 'video',
+/**
+ * Los proyectos del portfolio salen de `job_publications`. La caché se invalida
+ * por etiqueta cuando el admin publica o despublica, así que no se revalida el
+ * sitio entero por cambiar un texto. Ver docs/arquitectura.md.
+ */
+export const PROJECTS_TAG = 'projects'
+
+/** Las etiquetas visibles y sus slugs. El código va en inglés, la etiqueta en español. */
+export const CATEGORY_LABELS: Record<JobCategory, string> = {
+  artist: 'Artista',
+  sport: 'Deporte',
+  video: 'Vídeo',
 }
+
+export const CATEGORY_SLUGS: Record<JobCategory, string> = {
+  artist: 'artista',
+  sport: 'deporte',
+  video: 'video',
+}
+
+export const CATEGORIES = Object.keys(CATEGORY_LABELS) as JobCategory[]
 
 export type Project = {
   slug: string
   title: string
-  category: Category
+  summary: string | null
   year: number
-  client?: string
-  summary: string
+  category: JobCategory
+  categoryLabel: string
+  categorySlug: string
+  ratio: string
   coverSrc?: string
   coverAlt?: string
-  ratio: string
-  featured?: boolean
 }
 
-export const projects: Project[] = [
-  {
-    slug: 'julia-ferrer',
-    title: 'Júlia Ferrer',
-    category: 'Artista',
-    year: 2025,
-    client: 'Júlia Ferrer',
-    summary: 'Retrato de prensa para el lanzamiento del disco, en su local de ensayo.',
-    ratio: '4 / 5',
-    featured: true,
-  },
-  {
-    slug: 'trail-serra-de-tramuntana',
-    title: 'Trail Serra de Tramuntana',
-    category: 'Deporte',
-    year: 2025,
-    summary: 'Cobertura de carrera de montaña, de la salida de noche al último corredor.',
-    ratio: '3 / 2',
-    featured: true,
-  },
-  {
-    slug: 'sala-pelaires',
-    title: 'Sala Pelaires',
-    category: 'Vídeo',
-    year: 2024,
-    client: 'Sala Pelaires',
-    summary: 'Pieza corta para el anuncio de temporada.',
-    ratio: '4 / 5',
-    featured: true,
-  },
-]
+/** Las verticales y las apaisadas se alternan para que la rejilla escalone. */
+function ratioFor(index: number): string {
+  return index % 3 === 1 ? '3 / 2' : '4 / 5'
+}
 
-export const featuredProjects = projects.filter((p) => p.featured)
+export const listProjects = unstable_cache(
+  async (): Promise<Project[]> => {
+    const rows = await getPublishedProjects(await db())
+    return rows.map((row, i) => ({
+      slug: row.slug,
+      title: row.title,
+      summary: row.summary,
+      year: row.year,
+      category: row.category,
+      categoryLabel: CATEGORY_LABELS[row.category],
+      categorySlug: CATEGORY_SLUGS[row.category],
+      ratio: ratioFor(i),
+    }))
+  },
+  ['projects'],
+  { tags: [PROJECTS_TAG] },
+)
 
-export function getProject(slug: string): Project | undefined {
-  return projects.find((p) => p.slug === slug)
+export async function listFeaturedProjects(limit = 3): Promise<Project[]> {
+  return (await listProjects()).slice(0, limit)
 }
 
 export function isCategorySlug(value: unknown): boolean {
@@ -73,16 +74,31 @@ export function isCategorySlug(value: unknown): boolean {
  * todo, el usuario vería la lista completa sin ningún filtro marcado y sin
  * entender por qué.
  */
-export function projectsByCategorySlug(categorySlug?: string): Project[] {
-  if (!categorySlug) return projects
-  const entry = Object.entries(CATEGORY_SLUGS).find(([, slug]) => slug === categorySlug)
-  if (!entry) return []
-  return projects.filter((p) => p.category === entry[0])
+export async function projectsByCategorySlug(categorySlug?: string): Promise<Project[]> {
+  const all = await listProjects()
+  if (!categorySlug) return all
+  if (!isCategorySlug(categorySlug)) return []
+  return all.filter((p) => p.categorySlug === categorySlug)
 }
 
+export const getProject = unstable_cache(
+  async (slug: string) => {
+    const row = await getPublishedProjectBySlug(await db(), slug)
+    if (!row) return undefined
+    return {
+      ...row,
+      categoryLabel: CATEGORY_LABELS[row.category],
+      categorySlug: CATEGORY_SLUGS[row.category],
+      ratio: '4 / 5',
+    }
+  },
+  ['project'],
+  { tags: [PROJECTS_TAG] },
+)
+
 /** Anterior y siguiente dentro de la misma categoría, como pide el mapa de rutas. */
-export function siblings(project: Project): { prev?: Project; next?: Project } {
-  const sameCategory = projects.filter((p) => p.category === project.category)
-  const i = sameCategory.findIndex((p) => p.slug === project.slug)
+export async function siblings(slug: string, category: JobCategory) {
+  const sameCategory = (await listProjects()).filter((p) => p.category === category)
+  const i = sameCategory.findIndex((p) => p.slug === slug)
   return { prev: sameCategory[i - 1], next: sameCategory[i + 1] }
 }

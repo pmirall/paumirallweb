@@ -123,8 +123,15 @@ escribir un color en hexadecimal en el código, que es la regla de diseño aplic
 por el linter en vez de por la buena voluntad.
 
 Las variables de entorno se leen una vez en `src/lib/env.ts`, se validan con Zod
-al arrancar y se exportan tipadas. Si falta una, la aplicación no arranca en vez
-de fallar tres pantallas más adelante.
+al arrancar y se exportan tipadas. Si falta una obligatoria, la aplicación no
+arranca en vez de fallar tres pantallas más adelante.
+
+`DATABASE_URL` es un caso especial. En un despliegue de Vercel es obligatoria, y
+sin ella la aplicación no arranca. En local y en las pruebas puede faltar: la
+capa de datos cae entonces a PGlite, una base Postgres en fichero, así que el
+proyecto se clona y funciona sin credenciales. El distintivo es `VERCEL=1`, no
+`NODE_ENV`, porque las pruebas de extremo a extremo también corren en modo
+producción.
 
 Todo esto corre en el hook de pre-commit y en CI. Lo que pasa en local pasa en
 CI.

@@ -1,27 +1,40 @@
 import { drizzle as drizzlePg } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
-import { requireDatabaseUrl } from '@/lib/env'
+import { env } from '@/lib/env'
 import * as schema from './schema'
 
 /**
- * En producción, Postgres de Supabase por conexión directa. En local y en las
- * pruebas se usa PGlite, que es Postgres de verdad compilado a WASM, para no
- * necesitar ni Docker ni un servidor. El esquema y las migraciones son los
- * mismos en los dos sitios, así que lo que pasa en las pruebas pasa en
- * producción. Ver docs/arquitectura.md.
+ * En producción, Postgres de Supabase por DATABASE_URL. En desarrollo, en las
+ * pruebas y durante el build, si no hay DATABASE_URL se cae a PGlite, que es
+ * Postgres compilado a WASM guardado en un fichero local. Así el proyecto se
+ * clona, se construye y arranca sin credenciales de nadie, con el mismo esquema
+ * y las mismas migraciones que Supabase. Ver docs/arquitectura.md.
  */
-export type Database = ReturnType<typeof createDatabase>
+export type Database = Awaited<ReturnType<typeof createDatabase>>
 
-export function createDatabase(url: string) {
-  const client = postgres(url, { prepare: false })
-  return drizzlePg(client, { schema })
+const LOCAL_DATA_DIR = '.pglite'
+
+export async function createDatabase() {
+  if (env.DATABASE_URL) {
+    return drizzlePg(postgres(env.DATABASE_URL, { prepare: false }), { schema })
+  }
+
+  // Sin URL, base local. Que esto no ocurra en producción lo garantiza env.ts,
+  // que exige DATABASE_URL al arrancar.
+  const { PGlite } = await import('@electric-sql/pglite')
+  const { drizzle } = await import('drizzle-orm/pglite')
+  const { migrate } = await import('drizzle-orm/pglite/migrator')
+
+  const db = drizzle(new PGlite(LOCAL_DATA_DIR), { schema })
+  await migrate(db, { migrationsFolder: './drizzle' })
+  return db
 }
 
-let cached: Database | undefined
+let cached: Promise<Database> | undefined
 
-export function db(): Database {
+export function db(): Promise<Database> {
   if (!cached) {
-    cached = createDatabase(requireDatabaseUrl())
+    cached = createDatabase()
   }
   return cached
 }

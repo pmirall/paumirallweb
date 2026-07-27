@@ -6,6 +6,8 @@ const root = path.dirname(fileURLToPath(import.meta.url))
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // PGlite trae WASM y binarios que el empaquetador no debe tocar.
+  serverExternalPackages: ['@electric-sql/pglite', 'postgres'],
   // El lint corre como paso propio (pnpm lint) y en CI, no dentro del build.
   eslint: { ignoreDuringBuilds: true },
   // El alias de tsconfig no lo recoge el empaquetador en esta versión, así que

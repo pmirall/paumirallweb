@@ -28,7 +28,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm build && pnpm start',
+    // La base local se siembra antes de construir, para que el archivo
+    // prerenderice proyectos y las pruebas tengan datos que ver.
+    command: 'pnpm db:dev && pnpm build && pnpm start',
     url: 'http://127.0.0.1:3000',
     // En producción SITE_URL es obligatoria, así que aquí se pasa igual que
     // lo hará Vercel. Ver src/lib/env.ts.

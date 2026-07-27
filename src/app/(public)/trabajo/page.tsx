@@ -2,7 +2,12 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Eyebrow, EmptyState, Plate, Tag } from '@/components/ui'
 import { archive } from '@/content/pages'
-import { CATEGORIES, CATEGORY_SLUGS, projectsByCategorySlug } from '@/lib/projects'
+import {
+  CATEGORIES,
+  CATEGORY_LABELS,
+  CATEGORY_SLUGS,
+  projectsByCategorySlug,
+} from '@/lib/projects'
 import { z } from 'zod'
 
 /** Un parámetro repetido llega como array, así que se valida antes de usarlo. */
@@ -27,7 +32,7 @@ export default async function ArchivePage({
 }) {
   const params = await searchParams
   const cat = catSchema.parse(params.cat)
-  const list = projectsByCategorySlug(cat)
+  const list = await projectsByCategorySlug(cat)
 
   return (
     <section className="pm-slab pm-on-bone pm-page">
@@ -49,7 +54,7 @@ export default async function ArchivePage({
                 href={`/trabajo?cat=${slug}`}
                 aria-current={cat === slug ? 'page' : undefined}
               >
-                {category}
+                {CATEGORY_LABELS[category]}
               </Link>
             )
           })}
@@ -82,7 +87,7 @@ export default async function ArchivePage({
                   alt={project.coverAlt}
                 />
                 <div className="pm-work__meta">
-                  <Tag tone="accent">{project.category}</Tag>
+                  <Tag tone="accent">{project.categoryLabel}</Tag>
                   <span className="pm-work__year">{project.year}</span>
                 </div>
                 <h2 className="pm-work__title">{project.title}</h2>
