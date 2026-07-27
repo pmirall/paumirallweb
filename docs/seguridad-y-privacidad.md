@@ -12,7 +12,17 @@ El middleware comprueba la sesión y la pertenencia a esa lista antes de que se
 ejecute ningún código de página. Una sesión válida de Google que no esté en la
 lista recibe 404, no 403: no hace falta confirmarle a nadie que existe un panel.
 
-Sesión de ocho horas. Se renueva con actividad, caduca sin ella.
+Sesión de ocho horas, en una cookie firmada con HMAC. La firma se verifica en
+tiempo constante y la lista de autorizados manda aunque la firma sea válida.
+
+El secreto de firma, `SESSION_SECRET`, es obligatorio en el despliegue y de al
+menos 32 caracteres: sin él, cualquiera con el código podría falsificar la
+cookie. La aplicación no arranca en un despliegue sin ese secreto.
+
+Un aviso para cuando lleguen las rutas de API del admin: el middleware protege
+todo lo que cuelga de `/admin`, pero no `/api`. Las rutas de API que sirvan datos
+del admin viven bajo `/admin/api` para heredar la barrera, o comprueban la sesión
+por su cuenta.
 
 ## Acceso de cliente
 

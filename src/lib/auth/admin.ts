@@ -18,13 +18,32 @@ export function devBypassAllowed(): boolean {
 }
 
 async function key(): Promise<CryptoKey> {
-  const raw = new TextEncoder().encode(
-    env.SESSION_SECRET ?? 'desarrollo-inseguro-cambiar-en-produccion',
-  )
-  return crypto.subtle.importKey('raw', raw, { name: 'HMAC', hash: 'SHA-256' }, false, [
+  // Sin secreto no se firma nada. En desarrollo hay un valor por defecto solo
+  // para que el proyecto arranque; en un despliegue, env.ts exige el real, así
+  // que este fallback nunca se usa en producción. Aun así, si faltara, es mejor
+  // no poder emitir sesiones que emitirlas con un secreto que está en el código.
+  const secret = env.SESSION_SECRET ?? (isVercelDeploy ? undefined : 'solo-desarrollo-local')
+  if (!secret) {
+    throw new Error('Falta SESSION_SECRET. No se pueden firmar sesiones de administración.')
+  }
+  return crypto.subtle.importKey('raw', utf8(secret), { name: 'HMAC', hash: 'SHA-256' }, false, [
     'sign',
     'verify',
   ])
+}
+
+function fromBase64Url(text: string): Uint8Array<ArrayBuffer> {
+  const padded = text.replace(/-/g, '+').replace(/_/g, '/')
+  const binary = atob(padded)
+  const bytes = new Uint8Array(binary.length)
+  for (let i = 0; i < binary.length; i += 1) {
+    bytes[i] = binary.charCodeAt(i)
+  }
+  return bytes
+}
+
+function utf8(text: string): Uint8Array<ArrayBuffer> {
+  return new Uint8Array(new TextEncoder().encode(text))
 }
 
 function toBase64Url(bytes: ArrayBuffer): string {
@@ -33,8 +52,7 @@ function toBase64Url(bytes: ArrayBuffer): string {
 }
 
 async function sign(payload: string): Promise<string> {
-  const data = new TextEncoder().encode(payload)
-  const mac = await crypto.subtle.sign('HMAC', await key(), data)
+  const mac = await crypto.subtle.sign('HMAC', await key(), utf8(payload))
   return toBase64Url(mac)
 }
 
@@ -54,7 +72,20 @@ export async function verifySession(
   const payload = token.slice(0, lastDot)
   const signature = token.slice(lastDot + 1)
 
-  if ((await sign(payload)) !== signature) return null
+  // Verificación en tiempo constante: crypto.subtle.verify no filtra por dónde
+  // difiere una firma manipulada, a diferencia de comparar dos cadenas.
+  let valid: boolean
+  try {
+    valid = await crypto.subtle.verify(
+      'HMAC',
+      await key(),
+      fromBase64Url(signature),
+      utf8(payload),
+    )
+  } catch {
+    return null
+  }
+  if (!valid) return null
 
   // El correo lleva puntos, así que la expiración se separa por la derecha.
   const sep = payload.lastIndexOf('.')
@@ -62,7 +93,9 @@ export async function verifySession(
   const email = payload.slice(0, sep)
   const expiresRaw = payload.slice(sep + 1)
   if (!email || !expiresRaw) return null
-  if (Number(expiresRaw) < Date.now()) return null
+  const expires = Number(expiresRaw)
+  // Una expiración no numérica no debe pasar por "no caducada".
+  if (!Number.isFinite(expires) || expires < Date.now()) return null
   // La lista de autorizados manda aunque la firma sea válida.
   if (!adminAllowedEmails.includes(email.toLowerCase())) return null
 
@@ -72,7 +105,7 @@ export async function verifySession(
 export function adminCookieOptions() {
   return {
     httpOnly: true,
-    secure: isVercelDeploy,
+    secure: env.NODE_ENV === 'production',
     sameSite: 'lax' as const,
     path: '/',
     maxAge: MAX_AGE_SECONDS,

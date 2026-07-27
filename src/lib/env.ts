@@ -58,8 +58,15 @@ export function requireDatabaseUrl(): string {
  * sí se usa PGlite. El distintivo es Vercel, que fija VERCEL=1 al desplegar.
  */
 export const isVercelDeploy = process.env.VERCEL === '1'
-if (isVercelDeploy && !env.DATABASE_URL) {
-  throw new Error('Falta DATABASE_URL. En el despliegue la base de datos es obligatoria.')
+if (isVercelDeploy) {
+  if (!env.DATABASE_URL) {
+    throw new Error('Falta DATABASE_URL. En el despliegue la base de datos es obligatoria.')
+  }
+  // Sin un secreto propio, las sesiones de administración se firmarían con un
+  // valor conocido y cualquiera podría falsificar la cookie. Ver auth/admin.ts.
+  if (!env.SESSION_SECRET || env.SESSION_SECRET.length < 32) {
+    throw new Error('Falta SESSION_SECRET de al menos 32 caracteres en el despliegue.')
+  }
 }
 
 export const adminAllowedEmails = (env.ADMIN_ALLOWED_EMAILS ?? '')

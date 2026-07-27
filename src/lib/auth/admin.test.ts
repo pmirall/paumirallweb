@@ -29,4 +29,16 @@ describe('sesión de administración', () => {
   it('no acepta nada sin cookie', async () => {
     expect(await verifySession(undefined)).toBeNull()
   })
+
+  it('rechaza una cookie firmada con otro secreto', async () => {
+    // Se fabrica un token con la estructura correcta pero firma inventada.
+    const forged = 'pau@example.com.' + (Date.now() + 100000) + '.firmafalsa'
+    expect(await verifySession(forged)).toBeNull()
+  })
+
+  it('rechaza una expiración no numérica', async () => {
+    const token = await issueSession('pau@example.com')
+    const broken = token.replace(/\.\d+\./, '.mañana.')
+    expect(await verifySession(broken)).toBeNull()
+  })
 })
