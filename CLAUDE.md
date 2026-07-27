@@ -97,14 +97,20 @@ tabla de equivalencias entre el vocabulario del negocio y el del código está e
 
 ### Diseño
 
-La guía de imagen de marca todavía no ha llegado. Hasta que llegue, ningún
-componente lleva colores, tipografías, radios ni sombras escritos a mano. Todo
-sale de los tokens de `src/styles/tokens.css`, que ahora contienen valores
-provisionales en escala de grises. Cuando llegue la guía se sustituyen esos
-valores y el sitio entero cambia sin tocar componentes. Ver `docs/design-system.md`.
+Ningún componente lleva colores, tipografías, radios, sombras ni espacios
+escritos a mano. Todo sale de los tokens de `src/styles/tokens.css`. Si necesitas
+un valor que no existe como token, añade el token. No metas el valor suelto, y no
+uses clases de Tailwind con valor arbitrario.
 
-Si necesitas un valor que no existe como token, añade el token. No metas el valor
-suelto.
+Los tokens ya tienen los valores definitivos de la marca. El original está en
+`docs/design/tokens.css` y la fase 0 lo copia a `src/styles/tokens.css`. Si la
+marca cambia, cambia primero en el original.
+
+Lo que define visualmente el sitio: turquesa, esmeralda, tinta y hueso; Archivo
+en cursiva 800 para titulares y Bitter para epígrafes y entradillas; corte de
+esquina a 45 grados en vez de esquinas redondeadas; sombras que son placas
+macizas desplazadas, no difuminados. Sin modo oscuro. El detalle está en
+`docs/identidad-visual.md`.
 
 ### Trabajo de interfaz
 
@@ -125,11 +131,10 @@ decisiones de interfaz, `ui-styling` para componentes accesibles con Tailwind, y
 Cuando la skill y la documentación de este repositorio digan cosas distintas,
 gana la documentación de este repositorio. Dos casos concretos que se van a dar:
 
-La skill propone paletas y combinaciones tipográficas. Este proyecto no elige ni
-colores ni tipografías hasta que llegue la guía de imagen de marca, y cuando
-llegue entrarán por `src/styles/tokens.css`. Aprovecha sus recomendaciones de
-estructura, jerarquía, estados, contraste y patrones de interacción, y deja fuera
-los valores concretos de color y de tipografía.
+La skill propone paletas y combinaciones tipográficas. Aquí eso ya está decidido
+por la marca, así que se descarta. Aprovecha sus recomendaciones de estructura,
+jerarquía, estados, contraste y patrones de interacción, y deja fuera los valores
+concretos de color y de tipografía.
 
 La skill sugiere a veces escribir valores directos en las clases. Aquí no se
 hace, ni siquiera si la sugerencia viene de ella. El valor entra como token.

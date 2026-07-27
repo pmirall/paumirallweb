@@ -1,13 +1,18 @@
 # Documentación
 
-Estado: pre-construcción. Todavía no hay código. Estos documentos son lo que hay
-que leer para poder empezar a escribirlo.
+Estado: pre-construcción terminada. Todavía no hay código, pero ya no falta nada
+por decidir para empezar a escribirlo. La guía de imagen de marca ha llegado y el
+Drive real está explorado.
 
 ## Por dónde empezar
 
 Si es tu primer día en el proyecto, lee en este orden: visión y alcance,
 arquitectura, modelo de datos, plan de ejecución. Con eso ya puedes trabajar. El
 resto se consulta cuando toca.
+
+Si vienes a construir interfaz, añade identidad visual y contenido de
+lanzamiento. Si vienes a la sincronización con Drive, añade el inventario del
+Drive.
 
 ## Índice
 
@@ -19,8 +24,12 @@ resto se consulta cuando toca.
 | [arquitectura.md](arquitectura.md) | Stack, capas, flujo de datos, dónde vive cada cosa |
 | [modelo-de-datos.md](modelo-de-datos.md) | Tablas, relaciones, enumerados, reglas de integridad |
 | [integraciones.md](integraciones.md) | Drive, Calendar, facturación, cobros, correo |
+| [drive-inventario.md](drive-inventario.md) | Qué hay de verdad en el Drive y qué implica para la cola |
 | [seguridad-y-privacidad.md](seguridad-y-privacidad.md) | Accesos, sesiones, protección de datos, RGPD |
-| [design-system.md](design-system.md) | Tokens, componentes y el hueco reservado a la guía de marca |
+| [identidad-visual.md](identidad-visual.md) | Color, tipografía, forma y movimiento de la marca |
+| [design/tokens.css](design/tokens.css) | El fichero de tokens original |
+| [design-system.md](design-system.md) | Método, inventario de componentes, accesibilidad |
+| [contenido-de-lanzamiento.md](contenido-de-lanzamiento.md) | El texto real con el que sale el sitio |
 | [contenido-y-seo.md](contenido-y-seo.md) | Textos, metadatos, sitemap, migración de URLs |
 | [convenciones.md](convenciones.md) | Cómo se escribe el código en este repositorio |
 | [testing-y-calidad.md](testing-y-calidad.md) | Qué se prueba, cómo y hasta dónde |

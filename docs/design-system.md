@@ -1,54 +1,55 @@
 # Sistema de diseño
 
-La guía de imagen de marca llega en una fase posterior. Este documento define la
-estructura que la va a recibir, para que cuando llegue se pueda aplicar sin
-reescribir componentes.
+Cómo se construye la interfaz. Las decisiones visuales concretas, que ya están
+tomadas, están en `identidad-visual.md`; este documento cubre el método, el
+inventario de componentes y las reglas de accesibilidad y rendimiento.
 
 ## El contrato
 
 Ningún componente contiene un color, una tipografía, un radio, una sombra ni un
 espacio escritos a mano. Todo sale de tokens declarados como custom properties de
-CSS en `src/styles/tokens.css`, expuestos a Tailwind mediante `@theme`.
+CSS, expuestos a Tailwind mediante `@theme`.
 
-Mientras no exista la guía, los tokens tienen valores provisionales: una escala
-de grises neutra, una tipografía de sistema y una escala de espacios basada en 4
-píxeles. El sitio se puede construir entero así, y se verá soso a propósito. Eso
-es lo correcto en esta fase: si algo se ve bien con grises, se verá mejor con la
-marca puesta.
+El fichero original de tokens es `design/tokens.css`. La fase 0 lo copia a
+`src/styles/tokens.css` y lo conecta a Tailwind. Cuando la marca cambie, se
+cambia el original y se vuelve a copiar.
 
-Cuando llegue la guía, el cambio consiste en sustituir los valores de ese
-fichero. Si hay que tocar un componente, el token que faltaba estaba mal
-diseñado y se corrige en el token, no en el componente.
+Si hay que tocar un componente para conseguir un efecto visual, faltaba un token.
+Se corrige añadiendo el token, no escribiendo el valor en el componente. Las
+clases de Tailwind con valor arbitrario están prohibidas y una regla de lint las
+bloquea.
 
-## Tokens previstos
+## Los tokens
 
-Color, en pares de fondo y contenido para que el contraste se resuelva en el
-token y no en cada uso: `--color-bg`, `--color-fg`, `--color-muted`,
-`--color-subtle`, `--color-border`, `--color-accent`, `--color-accent-fg`, más
-los cuatro semánticos de éxito, aviso, error e información.
+Están agrupados por familia en `design/tokens.css`, con la transcripción de la
+guía y los añadidos que necesita el sistema marcados como tales.
 
-Tipografía: `--font-display` y `--font-body`, una escala de tamaños de `xs` a
-`4xl` con altura de línea emparejada, y tres pesos.
+Color en dos capas. La paleta base con prefijo `--pm-`, que no se usa
+directamente, y encima los alias semánticos declarados en pares de superficie y
+contenido, para que el contraste se resuelva en el token: `--surface-ink` va con
+`--text-on-ink`, `--surface-accent` va con `--text-on-accent`.
 
-Espacio: escala de 4 px, de `space-1` a `space-24`.
+Tipografía con cuatro composiciones listas para usar, `--type-logotype`,
+`--type-eyebrow`, `--type-lead` y `--type-body`, además de las escalas sueltas de
+tamaño, altura de línea, espaciado entre letras y peso.
 
-Forma: `--radius-sm`, `--radius-md`, `--radius-lg`, `--radius-full`, y tres
-niveles de sombra.
+Espacio en escala de 4 píxeles, de `--sp-1` a `--sp-11`, con medidas de página y
+una escala densa aparte para el admin.
 
-Movimiento: `--duration-fast`, `--duration-base`, `--duration-slow` y dos curvas.
-Todas las transiciones se anulan bajo `prefers-reduced-motion`.
+Forma sin radios: el corte de esquina a 45 grados con `--clip-chevron`, bordes de
+2 píxeles y sombras de placa maciza.
 
-Capas: una escala de `z-index` con nombre para modal, menú desplegable, aviso
-flotante y visor de imagen, para que nadie escriba `z-index: 9999`.
+Movimiento con tres duraciones y tres curvas, anuladas bajo
+`prefers-reduced-motion` en el propio fichero de tokens.
 
-## Modo claro y oscuro
+Capas con nombre, de `--z-header` a `--z-toast`, para que nadie escriba
+`z-index: 9999`.
 
-Los tokens se declaran en `:root` y se redefinen bajo `prefers-color-scheme: dark`.
-Los componentes no saben en qué modo están.
+## Sin modo oscuro
 
-La decisión de si el sitio público tiene modo oscuro depende de la guía de marca.
-La estructura lo soporta desde el principio; activarlo es cuestión de rellenar el
-bloque oscuro.
+La marca ya alterna secciones claras y oscuras dentro de la misma página, así que
+un modo oscuro global tendría que reinventar esa alternancia y acabaría
+contradiciéndola. La v1 no lo lleva, ni siquiera en el admin.
 
 ## La skill de interfaz
 
@@ -58,8 +59,8 @@ y shadcn/ui. Se invoca antes de construir o revisar cualquier pantalla. La regla
 completa está en `CLAUDE.md`.
 
 Sirve para decidir jerarquía, espaciado, estados, contraste y patrones de
-interacción. No sirve para elegir la paleta ni la tipografía: eso lo decide la
-guía de imagen de marca y entra por `tokens.css`.
+interacción. No sirve para elegir la paleta ni la tipografía: eso ya lo decide la
+marca y entra por `tokens.css`.
 
 ## Inventario de componentes
 
@@ -87,8 +88,12 @@ commit.
 
 ## Accesibilidad
 
-Contraste mínimo AA en todo texto. Si la guía de marca propone una combinación
-que no llega, se avisa antes de aplicarla y se busca alternativa.
+Contraste mínimo AA en todo texto.
+
+Hay una combinación de la marca que hay que vigilar: sobre el turquesa `#54b4a4`
+el texto va en tinta, nunca en blanco, porque en blanco no llega. El token
+`--text-on-accent` ya lo resuelve, así que el fallo solo aparece si alguien
+escribe el color a mano.
 
 Todo lo que se hace con ratón se puede hacer con teclado. El visor de fotos
 navega con flechas y se cierra con Escape. El modal atrapa el foco mientras está
@@ -113,16 +118,12 @@ La rejilla de la galería reserva el espacio de cada foto con la proporción rea
 que se conoce porque `media_assets` guarda ancho y alto.
 
 Las fuentes se cargan con `next/font`, subconjunto latino, y con
-`font-display: swap`. Cero peticiones a dominios de terceros.
+`font-display: swap`. Cero peticiones a dominios de terceros. Son dos familias de
+Google Fonts, Archivo y Bitter, y de Archivo hay que declarar el ancho 88 porque
+no es el valor por defecto.
+
+La textura de papel es un PNG de 200 píxeles que se repite. Se sirve desde
+`public/brand/` y se aplica solo a bloques de color, nunca sobre una fotografía.
 
 Objetivo: LCP por debajo de 2,5 s y CLS por debajo de 0,1 en móvil con conexión
 lenta, medido en `/` y en `/trabajo/:slug`.
-
-## Cuando llegue la guía
-
-El orden de aplicación es: rellenar los tokens, revisar las cinco pantallas que
-importan, ajustar lo que se rompa, y solo entonces recorrer el resto.
-
-Si la guía trae componentes que no están en el inventario, se añaden. Si trae
-decisiones que contradicen algo de este documento, gana la guía y este documento
-se actualiza.

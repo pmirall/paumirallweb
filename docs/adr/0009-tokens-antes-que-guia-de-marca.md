@@ -1,7 +1,15 @@
 # 0009. Construir sobre tokens antes de tener la guía de marca
 
-Estado: aceptada
+Estado: cumplida
 Fecha: 2026-07-27
+
+La guía llegó el mismo día, antes de escribir código, así que el escenario que
+esta decisión quería cubrir no llegó a darse. La regla de fondo sigue vigente y
+es la que manda: ningún valor visual se escribe en un componente. Lo que decae es
+la parte de los valores provisionales en gris.
+
+Los valores definitivos y el sistema visual están en el
+[ADR 0011](0011-sistema-visual-editorial-impreso.md).
 
 ## Contexto
 

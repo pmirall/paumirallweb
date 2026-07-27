@@ -22,10 +22,22 @@ La sincronización usa la API de cambios con token de página en vez de recorrer
 las carpetas enteras. La primera pasada sí es completa y puede tardar; las
 siguientes solo traen lo nuevo. El token de página se guarda en `settings`.
 
-Convención de carpetas configurable desde `/admin/drive/ajustes`. El patrón por
-defecto es `AAAA-MM-DD Cliente - Descripción`, y de ahí se extraen la fecha y el
-nombre del cliente que se ofrecen como sugerencia en la cola. Las carpetas que no
-encajen en el patrón entran igual en la cola, sin sugerencia.
+Convención de carpetas configurable desde `/admin/drive/ajustes`, con varias
+carpetas raíz. El patrón dominante en el Drive real es `Nombre.AA.MM.DD`, y de
+ahí se extraen la fecha y el nombre del cliente que se ofrecen como sugerencia.
+
+Sugerencia es la palabra exacta. El archivo real tiene días de tres cifras, meses
+trece, comas en lugar de puntos, y carpetas donde la misma cifra es el año o el
+día según dónde cuelgue. La cola siempre pide confirmación y nunca aplica una
+fecha deducida. Los detalles y los ejemplos están en `drive-inventario.md`, y la
+decisión en el [ADR 0012](adr/0012-la-cola-recorre-un-arbol-no-una-lista.md).
+
+El árbol tiene hasta tres niveles: hay carpetas de cliente que dentro llevan una
+carpeta por año y dentro las sesiones. Una carpeta no equivale a un encargo.
+
+Filtro por tipo de archivo, configurable. Las sesiones mezclan los JPEG de la
+cámara con ficheros de trabajo de Photoshop y exportaciones sueltas. Los `.psd`
+se ignoran. Lo que no sea JPEG entra marcado como dudoso y se decide a mano.
 
 Cuotas: la API de Drive limita las peticiones por usuario y por proyecto. El
 adaptador reintenta con espera creciente ante un 429 y registra el incidente. Si

@@ -21,10 +21,9 @@ ordenar, no para prometer fechas.
 | 5 | Presupuestos, facturas, gastos y rentabilidad | 3 semanas |
 | 6 | Lanzamiento | 1 semana |
 
-La guía de imagen de marca se aplica cuando llegue. Encaja mejor entre la fase 2
-y la fase 3, porque la 3 es la primera que alguien de fuera va a ver. Si llega
-más tarde, la fase 3 se construye con los tokens provisionales y se repasa
-después. El plan no se bloquea esperándola.
+La guía de imagen de marca ya está, con sus tokens escritos, así que no hay nada
+que esperar: se aplica desde la fase 0 y la fase 3 se construye ya con la marca
+puesta. Ver `identidad-visual.md`.
 
 ---
 
@@ -38,8 +37,9 @@ arena.
 Crear el proyecto Next.js 15 con App Router, TypeScript estricto, Tailwind v4 y
 pnpm. Configurar ESLint, Prettier y el hook de pre-commit.
 
-Escribir `src/styles/tokens.css` con la lista completa de tokens y valores
-provisionales en escala de grises, conectados a Tailwind con `@theme`.
+Copiar `docs/design/tokens.css` a `src/styles/tokens.css` y conectarlo a Tailwind
+con `@theme`. Cargar Archivo y Bitter con `next/font`, declarando el ancho 88 de
+Archivo. Copiar la textura de papel de `docs/design/assets/` a `public/brand/`.
 
 Crear el proyecto de Supabase, configurar Drizzle, escribir la primera migración
 con las tablas de la fase 1 y dejar `pnpm db:generate`, `pnpm db:migrate` y
@@ -64,8 +64,12 @@ Crear los tres layouts de zona con el middleware que aplica `noindex` y
 
 Un push a una rama produce una vista previa desplegada con CI en verde.
 
-Cambiar el valor de `--color-accent` en `tokens.css` cambia el color en la
-pantalla de ejemplo sin tocar ningún componente.
+Cambiar el valor de `--pm-teal` en `tokens.css` cambia el color en la pantalla de
+ejemplo sin tocar ningún componente.
+
+Una pantalla de ejemplo muestra las cuatro composiciones tipográficas, el corte
+de esquina y la sombra de placa, y se parece a la maqueta de
+`docs/design/assets/maqueta-portada.png`.
 
 Arrancar sin una variable de entorno obligatoria falla con un mensaje que dice
 cuál falta.
@@ -139,7 +143,9 @@ Tablas `drive_folders`, `drive_sync_runs`, `media_assets`, `media_derivatives` y
 `job_queue`.
 
 Sincronización incremental con la API de cambios, con token de página guardado y
-reintento con espera creciente ante límites de cuota.
+reintento con espera creciente ante límites de cuota. Recorrido de hasta tres
+niveles, con clasificación de cada carpeta como encargo, contenedor de cliente o
+ignorada, y filtro configurable por tipo de archivo. Ver `drive-inventario.md`.
 
 Generación de derivadas en la cola: miniatura, tamaño web y copia con marca de
 agua. La marca de agua se compone desde un SVG con tokens, para que cambie con la
@@ -161,7 +167,16 @@ La pestaña de archivos de la ficha de encargo.
 ### Criterios de aceptación
 
 La primera sincronización completa recorre el Drive real y deja las carpetas en
-la cola sin agotar la cuota.
+la cola sin agotar la cuota, y deja anotado el recuento total de carpetas y
+archivos, que hoy no se conoce.
+
+Una carpeta de cliente con años dentro, como `Pepo`, se clasifica una vez y sus
+sesiones aparecen con el cliente ya sugerido.
+
+Una carpeta con fecha ambigua, como `Jorge.24.13.02`, llega a la cola con la
+fecha marcada como dudosa en vez de con un valor inventado.
+
+Los ficheros `.psd` no entran como archivos del encargo.
 
 Una carpeta nueva en Drive aparece en la cola en menos de una hora sin
 intervención.
@@ -184,8 +199,13 @@ Cortar la conexión con Drive a mitad de sincronización no deja datos a medias.
 
 ## Fase 3. Web pública
 
-La primera fase que ve alguien de fuera. Si la guía de marca ha llegado, se
-aplica aquí. Si no, se construye con los tokens provisionales.
+La primera fase que ve alguien de fuera, y la primera con la marca puesta de
+verdad. El texto con el que sale está en `contenido-de-lanzamiento.md`; no se
+redacta nada nuevo salvo lo que allí falte.
+
+Antes de empezar hay que cerrar las tres discrepancias que ese documento recoge:
+a dónde lleva "Reservar sesión", si la selección de la portada son tres proyectos
+o seis, y si el nombre del estudio aparece fuera del pie.
 
 ### Qué se hace
 
@@ -265,7 +285,9 @@ proporción, visor a pantalla completa en modal con teclado, descarga individual
 selector de calidad.
 
 Descarga completa: ZIP en streaming por debajo del umbral, ZIP preparado en
-segundo plano por encima, con aviso por correo y caducidad a los siete días.
+segundo plano por encima, con aviso por correo y caducidad a los siete días. Con
+originales de 10 a 19 MB, casi cualquier encargo de deporte cruza el umbral, así
+que la rama del ZIP preparado es el camino normal y se construye primero.
 
 Marca de agua servida cuando la factura está pendiente, con bloqueo real de la
 alta resolución en el servidor.

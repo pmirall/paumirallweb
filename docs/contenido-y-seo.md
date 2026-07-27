@@ -1,5 +1,8 @@
 # Contenido y posicionamiento
 
+El texto concreto con el que sale el sitio está en `contenido-de-lanzamiento.md`.
+Este documento explica dónde vive cada cosa y cómo se posiciona.
+
 ## Dónde vive cada texto
 
 Ningún texto visible se escribe dentro de un componente. Hay dos sitios posibles
@@ -44,8 +47,9 @@ partir del título del proyecto y la categoría, pero el editor avisa de que
 conviene escribirlo.
 
 Open Graph e imagen de compartición en todas las páginas públicas. La imagen de
-un proyecto es su portada. La del resto del sitio es una imagen fija que se
-define con la guía de marca.
+un proyecto es su portada. La del resto del sitio es una imagen fija que todavía
+no existe: la guía de marca no la traía y hay que producirla antes del
+lanzamiento, junto con el logotipo en SVG. Está anotado en `identidad-visual.md`.
 
 Datos estructurados: `Person` y `LocalBusiness` en la portada, `ImageGallery` en
 cada ficha de proyecto, `BreadcrumbList` en las rutas anidadas. Es lo que hace

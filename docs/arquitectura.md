@@ -101,6 +101,11 @@ listo. El ZIP preparado caduca a los siete días.
 El umbral es un ajuste, no una constante en el código. Se mide con encargos
 reales durante la fase 4 y se sube o se baja.
 
+Con lo que hay en el Drive real, los originales pesan entre 10 y 19 MB, así que
+las 150 fotos del servicio de deporte pasan de 2 GB. La rama del ZIP preparado no
+es el caso excepcional: es el camino normal para deporte, y el streaming queda
+para los retratos. Se construye en ese orden.
+
 ## Trabajos en segundo plano
 
 No hay cola dedicada ni Redis. Hay una tabla `job_queue` en Postgres y un cron de
