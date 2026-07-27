@@ -11,6 +11,7 @@ export default defineConfig({
     // segundos en arrancar. El límite por defecto de 5s no llega.
     testTimeout: 30_000,
     hookTimeout: 30_000,
+    setupFiles: ['./vitest.setup.ts'],
   },
   resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
 })

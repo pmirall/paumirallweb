@@ -104,7 +104,10 @@ Esquema completo de `clients`, `leads`, `jobs`, `job_publications`,
 `deliverables`, `time_entries` y `audit_log`.
 
 Google Sign-In con Supabase Auth, restringido por lista de correos, y
-`/admin/login`.
+`/admin/login`. Hasta que haya credenciales de Google, hay un acceso de
+desarrollo que emite la misma cookie de sesión firmada, gated para que nunca
+surta efecto en un despliegue de Vercel. Así el admin se construye y se prueba
+entero, y el Sign-In real se conecta sin tocar ninguna pantalla.
 
 Las primitivas de `src/components/ui/`: botón, campo, selector, casilla,
 interruptor, selector de fecha, etiqueta de estado, aviso, modal, panel lateral,

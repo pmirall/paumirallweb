@@ -47,7 +47,7 @@ export default ts.config(
     },
   },
   {
-    files: ['src/lib/env.ts', '*.config.*', 'src/**/*.test.ts'],
+    files: ['src/lib/env.ts', '*.config.*', 'src/**/*.test.ts', 'vitest.setup.ts'],
     rules: { 'no-restricted-properties': 'off', 'no-restricted-syntax': 'off' },
   },
 )

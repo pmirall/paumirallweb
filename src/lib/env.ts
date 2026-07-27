@@ -25,6 +25,9 @@ const schema = z.object({
   SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
   DATABASE_URL: z.string().min(1).optional(),
   ADMIN_ALLOWED_EMAILS: z.string().optional(),
+  SESSION_SECRET: z.string().min(1).optional(),
+  // Acceso de desarrollo al admin. Solo surte efecto fuera de Vercel.
+  ADMIN_DEV_BYPASS: z.enum(['0', '1']).optional(),
 })
 
 const parsed = schema.safeParse(process.env)
@@ -54,7 +57,7 @@ export function requireDatabaseUrl(): string {
  * `next start` en las pruebas de extremo a extremo también es producción y allí
  * sí se usa PGlite. El distintivo es Vercel, que fija VERCEL=1 al desplegar.
  */
-const isVercelDeploy = process.env.VERCEL === '1'
+export const isVercelDeploy = process.env.VERCEL === '1'
 if (isVercelDeploy && !env.DATABASE_URL) {
   throw new Error('Falta DATABASE_URL. En el despliegue la base de datos es obligatoria.')
 }

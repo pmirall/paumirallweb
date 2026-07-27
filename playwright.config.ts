@@ -34,7 +34,13 @@ export default defineConfig({
     url: 'http://127.0.0.1:3000',
     // En producción SITE_URL es obligatoria, así que aquí se pasa igual que
     // lo hará Vercel. Ver src/lib/env.ts.
-    env: { SITE_URL: 'http://127.0.0.1:3000' },
+    env: {
+      SITE_URL: 'http://127.0.0.1:3000',
+      // El admin se prueba con el acceso de desarrollo, que Vercel nunca activa.
+      ADMIN_ALLOWED_EMAILS: 'pau@example.com',
+      SESSION_SECRET: 'secreto-de-prueba-e2e',
+      ADMIN_DEV_BYPASS: '1',
+    },
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,
   },

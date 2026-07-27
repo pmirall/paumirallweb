@@ -34,8 +34,11 @@ test('el contenido se ve aunque no haya JavaScript', async ({ browser }) => {
 })
 
 test('la zona de administración no se indexa', async ({ page }) => {
-  const response = await page.goto('/admin')
-  expect(response?.headers()['x-robots-tag']).toContain('noindex')
+  // /admin sin sesión responde 404; la pantalla de acceso sí es alcanzable y
+  // lleva la cabecera. Se usa request para no tropezar con el 404. El gate en
+  // sí lo cubre admin.spec.ts.
+  const response = await page.request.get('/admin/login')
+  expect(response.headers()['x-robots-tag']).toContain('noindex')
 })
 
 test('el archivo filtra por categoría y avisa cuando no hay nada', async ({ page }) => {
