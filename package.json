@@ -15,7 +15,8 @@
     "format": "prettier --write .",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx --tsconfig tsconfig.json src/db/migrate.ts",
-    "db:seed": "tsx --tsconfig tsconfig.json src/db/seed.ts"
+    "db:seed": "tsx --tsconfig tsconfig.json src/db/seed.ts",
+    "prepare": "git config core.hooksPath .githooks || true"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",
