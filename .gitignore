@@ -2,3 +2,12 @@ __pycache__/
 *.pyc
 docs/design/landing/fotos/*
 !docs/design/landing/fotos/README.md
+
+# Next.js
+node_modules/
+.next/
+next-env.d.ts
+test-results/
+playwright-report/
+.env
+.env.local

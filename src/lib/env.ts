@@ -1,0 +1,32 @@
+import { z } from 'zod'
+
+/**
+ * Las variables de entorno se leen y se validan aquí una sola vez. Si falta
+ * una obligatoria, la aplicación no arranca en vez de fallar tres pantallas
+ * más adelante. Ninguna lleva el prefijo NEXT_PUBLIC_: nada de esto puede
+ * llegar al navegador. Ver docs/seguridad-y-privacidad.md.
+ */
+const schema = z.object({
+  SITE_URL: z.string().url().default('http://localhost:3000'),
+  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+
+  // Se vuelven obligatorias en la fase 1, cuando exista base de datos.
+  SUPABASE_URL: z.string().url().optional(),
+  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1).optional(),
+  DATABASE_URL: z.string().min(1).optional(),
+  ADMIN_ALLOWED_EMAILS: z.string().optional(),
+})
+
+const parsed = schema.safeParse(process.env)
+
+if (!parsed.success) {
+  const missing = parsed.error.issues.map((i) => i.path.join('.')).join(', ')
+  throw new Error(`Faltan o son inválidas estas variables de entorno: ${missing}`)
+}
+
+export const env = parsed.data
+
+export const adminAllowedEmails = (env.ADMIN_ALLOWED_EMAILS ?? '')
+  .split(',')
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean)

@@ -113,9 +113,14 @@ Ver `design-system.md` para el resto.
 
 Prettier con la configuración del repositorio, sin discusión sobre estilo.
 
-ESLint con la configuración de Next más reglas propias: prohibido `any`,
-prohibido importar entre zonas (un componente de `admin` no importa de `client`),
-prohibido usar variables de entorno del servidor fuera de `src/lib/env.ts`.
+ESLint con configuración propia. `eslint-config-next` todavía no funciona con
+ESLint 10, así que de momento se parte de las reglas recomendadas de JavaScript y
+de TypeScript. Cuando salga la versión compatible se vuelve a añadir.
+
+Encima van las reglas del repositorio: prohibido `any`, prohibido usar variables
+de entorno fuera de `src/lib/env.ts`, prohibido `console.log`, y prohibido
+escribir un color en hexadecimal en el código, que es la regla de diseño aplicada
+por el linter en vez de por la buena voluntad.
 
 Las variables de entorno se leen una vez en `src/lib/env.ts`, se validan con Zod
 al arrancar y se exportan tipadas. Si falta una, la aplicación no arranca en vez

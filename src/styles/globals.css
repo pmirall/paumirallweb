@@ -1,0 +1,59 @@
+@import 'tailwindcss';
+@import './tokens.css';
+
+/* Los tokens de marca se exponen a Tailwind. Las utilidades apuntan a las
+   custom properties, así que cambiar tokens.css cambia el sitio entero sin
+   tocar ningún componente. Ver docs/identidad-visual.md. */
+@theme inline {
+  --color-ink: var(--pm-ink);
+  --color-ink-soft: var(--pm-ink-soft);
+  --color-ink-lift: var(--pm-ink-lift);
+  --color-graphite: var(--pm-graphite);
+  --color-slate: var(--pm-slate);
+  --color-bone: var(--pm-bone);
+  --color-paper: var(--pm-paper);
+  --color-teal: var(--pm-teal);
+  --color-teal-light: var(--pm-teal-light);
+  --color-teal-lighter: var(--pm-teal-lighter);
+  --color-teal-dark: var(--pm-teal-dark);
+  --color-teal-deep: var(--pm-teal-deep);
+  --color-emerald: var(--pm-emerald);
+  --color-emerald-dark: var(--pm-emerald-dark);
+  --color-emerald-deep: var(--pm-emerald-deep);
+  --color-amber: var(--pm-amber);
+  --color-crimson: var(--pm-crimson);
+
+  --font-display: var(--font-archivo);
+  --font-serif: var(--font-bitter);
+  --font-sans: var(--font-archivo);
+
+  --radius-none: var(--radius-none);
+  --radius-xs: var(--radius-xs);
+
+  --ease-out: var(--ease-out);
+  --ease-snap: var(--ease-snap);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--surface-page);
+  color: var(--text-body);
+  font: var(--type-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+:focus-visible {
+  outline: var(--border-w) solid var(--focus-ring);
+  outline-offset: 3px;
+}
+
+::selection {
+  background: var(--pm-teal);
+  color: var(--pm-ink);
+}

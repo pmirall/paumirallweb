@@ -32,6 +32,14 @@ puesta. Ver `identidad-visual.md`.
 Nadie ve nada al terminar esta fase. Sin ella, todo lo demás se construye sobre
 arena.
 
+Estado: la parte local está hecha y en verde. Falta lo que necesita cuentas
+propias, que es el proyecto de Supabase con Drizzle y sus tres comandos de base
+de datos, y la conexión con Vercel. Tres cosas se decidieron al construirla y no
+estaban previstas: TypeScript va fijado en la 6, porque Next 15 no admite la 7;
+la configuración va en `next.config.mjs` y no en `.ts`, porque la de TypeScript
+no carga; y el alias `@/` se declara también en esa configuración, porque el
+empaquetador no lo coge de `tsconfig.json`.
+
 ### Qué se hace
 
 Crear el proyecto Next.js 15 con App Router, TypeScript estricto, Tailwind v4 y
