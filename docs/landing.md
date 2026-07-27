@@ -159,10 +159,31 @@ eso los epígrafes sobre fondo claro van en esmeralda oscuro.
 
 Sin desbordamiento horizontal a 390, 768 ni 1440.
 
-## Lo que falta
+## Las fotos
 
-La foto de portada y las cuatro de las piezas. Es lo único que separa esta
-portada de estar terminada, y es lo primero que hay que hacer en la fase 3.
+La portada está cableada para recibirlas. Se dejan cinco archivos con nombre fijo
+en `design/landing/fotos/` y entran solas; si falta alguno, ese hueco se queda con
+el marcador y la página sigue funcionando. Los nombres, formatos y tamaños están
+en el README de esa carpeta. No entran en git.
+
+Elegirlas desde este entorno no es posible: la política de red bloquea Google y
+el conector de Drive devuelve vacío para imágenes, así que se pueden listar las
+carpetas pero no ver ni descargar el contenido. La selección la hace una persona.
+
+De lo que hay en `02-Sesiones`, estas son las candidatas por fecha y por variedad,
+con la categoría inferida del nombre de la carpeta y por tanto sin confirmar:
+
+Lo más reciente son `Pepo/2026/Group.21.06.26` e `Intensive 06.06.26`, de junio de
+2026, y `Pepo Cape town 26.03.02`, de marzo.
+
+De 2025: `Perales.25.11.07`, `Marlene.25.07.01`, `Luca.25.07.01`,
+`Gabrielle.25.06.25`, `Autumn.25.06.26` e `Inca Street Art 25.05.17`.
+
+Con pinta de deporte: `ElToroRugby.24.06.15` y `Horizontal_convention.24.10.25`.
+
+Lo que más se va a notar es que las tres piezas de la selección sean de categorías
+distintas. Ahí lo que se demuestra es el rango, y eso pesa más que lo buena que
+sea cada foto por separado.
 
 Los enlaces del menú apuntan a anclas dentro de la propia página porque aquí solo
 existe la portada. En producción van a sus rutas, y "Reservar sesión" a

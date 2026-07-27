@@ -102,7 +102,12 @@ h2{font-family:var(--font-display);font-style:italic;font-weight:var(--fw-black)
   background-size:var(--texture-size);opacity:.35;mix-blend-mode:overlay}
 .plate::after{content:"";position:absolute;inset:0;
   background:linear-gradient(118deg,transparent 42%,rgba(84,180,164,.22) 50%,transparent 58%)}
-.plate img{width:100%;height:100%;object-fit:cover}
+.plate img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0;z-index:1}
+/* Con foto real, el marcador y el brillo diagonal desaparecen. */
+.plate.has-photo::after{opacity:.18}
+.plate.has-photo .plate-note{display:none}
+.plate.has-photo .plate-code{color:var(--pm-bone);
+  text-shadow:0 1px 3px rgba(26,27,27,.85)}
 .plate-code{position:absolute;left:var(--sp-4);bottom:var(--sp-3);z-index:2;
   font:var(--type-eyebrow);letter-spacing:var(--tracking-label);color:var(--pm-teal);opacity:.85}
 .plate-note{position:absolute;inset:var(--sp-5) var(--sp-4) auto;z-index:2;text-align:center;
@@ -365,6 +370,7 @@ h2{font-family:var(--font-display);font-style:italic;font-weight:var(--fw-black)
 
     <div class="wrap hero-stage">
       <figure class="hero-band plate" style="margin:0">
+        <img data-src="fotos/portada.jpg" alt="" hidden>
         <span class="plate-note">Foto de portada, a todo el ancho</span>
         <span class="plate-code">F—01 · Artista</span>
       </figure>
@@ -413,17 +419,17 @@ h2{font-family:var(--font-display);font-style:italic;font-weight:var(--fw-black)
 
       <div class="work">
         <a class="work-item rise" data-d="1" href="/trabajo/julia-ferrer">
-          <div class="work-plate plate"><span class="plate-code">F—02</span></div>
+          <div class="work-plate plate"><img data-src="fotos/trabajo-1.jpg" alt="" hidden><span class="plate-code">F—02</span></div>
           <div class="work-meta"><span class="tag">Artista</span><span class="year">2025</span></div>
           <h3 class="work-title">Júlia Ferrer</h3>
         </a>
         <a class="work-item rise" data-d="2" href="/trabajo/trail-serra-de-tramuntana">
-          <div class="work-plate plate"><span class="plate-code">F—03</span></div>
+          <div class="work-plate plate"><img data-src="fotos/trabajo-2.jpg" alt="" hidden><span class="plate-code">F—03</span></div>
           <div class="work-meta"><span class="tag">Deporte</span><span class="year">2025</span></div>
           <h3 class="work-title">Trail Serra de Tramuntana</h3>
         </a>
         <a class="work-item rise" data-d="3" href="/trabajo/sala-pelaires">
-          <div class="work-plate plate"><span class="plate-code">F—04</span></div>
+          <div class="work-plate plate"><img data-src="fotos/trabajo-3.jpg" alt="" hidden><span class="plate-code">F—04</span></div>
           <div class="work-meta"><span class="tag">Vídeo</span><span class="year">2024</span></div>
           <h3 class="work-title">Sala Pelaires</h3>
         </a>
@@ -474,6 +480,7 @@ h2{font-family:var(--font-display);font-style:italic;font-weight:var(--fw-black)
   <section class="slab slab-cut-rev on-bone" id="sobre-mi" aria-labelledby="h-sobre">
     <div class="wrap about">
       <figure class="about-plate plate rise" style="margin:0">
+        <img data-src="fotos/retrato.jpg" alt="Pau Miralles" hidden>
         <span class="plate-note">Retrato de Pau</span>
         <span class="plate-code">F—05</span>
       </figure>
@@ -553,6 +560,13 @@ const io = new IntersectionObserver((entries) => {
   entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('is-in'); io.unobserve(e.target); } });
 }, { rootMargin: '0px 0px -12% 0px' });
 document.querySelectorAll('.rise').forEach(el => io.observe(el));
+
+// Fotos opcionales: si el archivo está en fotos/, entra sin tocar nada más.
+document.querySelectorAll('.plate img[data-src]').forEach(img => {
+  img.onload = () => { img.hidden = false; img.closest('.plate').classList.add('has-photo'); };
+  img.onerror = () => img.remove();
+  img.src = img.dataset.src;
+});
 
 // La hoja de contactos avanza sola, como un carrete pasando.
 const frames = [...document.querySelectorAll('.frame')];

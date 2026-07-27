@@ -1,2 +1,4 @@
 __pycache__/
 *.pyc
+docs/design/landing/fotos/*
+!docs/design/landing/fotos/README.md
