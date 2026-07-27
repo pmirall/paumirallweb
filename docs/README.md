@@ -30,6 +30,7 @@ Drive.
 | [design/tokens.css](design/tokens.css) | El fichero de tokens original |
 | [design/assets/logo/](design/assets/logo/README.md) | Logotipo, isotipo, favicon y marca de agua |
 | [design-system.md](design-system.md) | Método, inventario de componentes, accesibilidad |
+| [landing.md](landing.md) | La portada: intención, composición, movimiento y prototipo |
 | [contenido-de-lanzamiento.md](contenido-de-lanzamiento.md) | El texto real con el que sale el sitio |
 | [contenido-y-seo.md](contenido-y-seo.md) | Textos, metadatos, sitemap, migración de URLs |
 | [convenciones.md](convenciones.md) | Cómo se escribe el código en este repositorio |
