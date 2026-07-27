@@ -1,5 +1,6 @@
 import { drizzle as drizzlePg } from 'drizzle-orm/postgres-js'
 import postgres from 'postgres'
+import { requireDatabaseUrl } from '@/lib/env'
 import * as schema from './schema'
 
 /**
@@ -20,11 +21,7 @@ let cached: Database | undefined
 
 export function db(): Database {
   if (!cached) {
-    const url = process.env.DATABASE_URL
-    if (!url) {
-      throw new Error('Falta DATABASE_URL. Ver .env.example.')
-    }
-    cached = createDatabase(url)
+    cached = createDatabase(requireDatabaseUrl())
   }
   return cached
 }

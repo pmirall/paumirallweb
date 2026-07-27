@@ -1,3 +1,4 @@
+import { requireDatabaseUrl } from '@/lib/env'
 import { createDatabase } from './client'
 import { clients, deliverables, jobPublications, jobs, leads, timeEntries } from './schema'
 
@@ -134,9 +135,7 @@ export async function seed(db: ReturnType<typeof createDatabase>) {
 }
 
 async function main() {
-  const url = process.env.DATABASE_URL
-  if (!url) throw new Error('Falta DATABASE_URL. Ver .env.example.')
-  await seed(createDatabase(url))
+  await seed(createDatabase(requireDatabaseUrl()))
   process.stdout.write('Datos de ejemplo cargados.\n')
 }
 

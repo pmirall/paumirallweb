@@ -14,8 +14,8 @@
     "test:e2e": "playwright test",
     "format": "prettier --write .",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "tsx src/db/migrate.ts",
-    "db:seed": "tsx src/db/seed.ts"
+    "db:migrate": "tsx --tsconfig tsconfig.json src/db/migrate.ts",
+    "db:seed": "tsx --tsconfig tsconfig.json src/db/seed.ts"
   },
   "dependencies": {
     "drizzle-orm": "^0.45.2",

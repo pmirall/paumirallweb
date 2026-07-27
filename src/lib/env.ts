@@ -36,6 +36,18 @@ if (!parsed.success) {
 
 export const env = parsed.data
 
+/**
+ * La base de datos no es obligatoria para construir la web pública, pero sí
+ * para cualquier cosa que la toque. Se pide aquí para que el mensaje sea
+ * siempre el mismo y para que nadie lea process.env por su cuenta.
+ */
+export function requireDatabaseUrl(): string {
+  if (!env.DATABASE_URL) {
+    throw new Error('Falta DATABASE_URL. Ver .env.example.')
+  }
+  return env.DATABASE_URL
+}
+
 export const adminAllowedEmails = (env.ADMIN_ALLOWED_EMAILS ?? '')
   .split(',')
   .map((e) => e.trim().toLowerCase())
