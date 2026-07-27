@@ -193,6 +193,20 @@ Dos frases nuevas que no venían de la maqueta y que conviene aprobar o cambiar:
 el título de la sección de contacto, "Cuéntame qué necesitas", y su entradilla,
 "Escríbeme con la fecha y el sitio. Te contesto con un presupuesto cerrado".
 
+## Estado
+
+Convertida a componentes en `src/components/public/`, con los textos en
+`src/content/landing.ts` y los datos en `src/lib/`. Los proyectos destacados y
+las tarifas ya tienen la forma que van a tener cuando salgan de la base de datos,
+para que ese cambio no toque ningún componente.
+
+Diez pruebas de extremo a extremo la cubren, incluida una que carga la página con
+JavaScript desactivado y comprueba que el contenido sigue visible.
+
+Un apunte de accesibilidad que corrigió la implementación: el truco de ampliar el
+área táctil con un pseudoelemento no amplía la caja que mide el navegador, así
+que no se puede comprobar. Los enlaces pequeños llevan altura real de 44 píxeles.
+
 ## Al pasar a componentes
 
 La portada se descompone en cabecera, hero, franja, selección, servicios, sobre
