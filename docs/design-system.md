@@ -67,6 +67,17 @@ marca y entra por `tokens.css`.
 El admin son veintidós pantallas construidas con los mismos seis componentes
 repetidos. Merece la pena construirlos bien una vez.
 
+Las primitivas se escriben en CSS dentro de `@layer components`, no con
+utilidades de Tailwind. El lenguaje de la marca se apoya en `clip-path` y en
+`drop-shadow` con valores de token, y expresarlo con utilidades obligaría a
+clases de valor arbitrario, que están prohibidas. Las utilidades se siguen
+usando para maquetar.
+
+Dos cosas de Tailwind v4 que conviene saber: su reset anula cualquier estilo que
+no esté en una capa, así que las primitivas van dentro de `@layer components`
+para ganarle; y Lightning CSS no resuelve `@import` a ficheros propios, así que
+ese CSS vive dentro de `globals.css` en vez de en un fichero aparte.
+
 Primitivas en `src/components/ui/`: botón con sus variantes, campo de texto,
 selector, casilla, interruptor, selector de fecha, etiqueta de estado, aviso,
 modal, panel lateral, menú, pestañas, tabla con orden y paginación, formulario

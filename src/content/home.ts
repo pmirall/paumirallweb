@@ -6,4 +6,8 @@ export const home = {
   eyebrow: 'Fotógrafo y videógrafo',
   name: 'Pau Miralles',
   lead: 'Retrato de artistas y fotografía de deporte. Vivo en Palma de Mallorca y viajo a donde estés trabajando.',
+  ctaWork: 'Ver el trabajo',
+  ctaBook: 'Reservar sesión',
+  platePlaceholder: 'Foto de portada',
+  categories: ['Artista', 'Deporte', 'Vídeo'],
 } as const

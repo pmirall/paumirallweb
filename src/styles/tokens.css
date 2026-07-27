@@ -158,6 +158,9 @@
   --notch: 28px;
   --notch-s: 14px;
   --notch-l: 56px;
+  /* AÑADIDO. El corte pequeño se come el borde en elementos de una línea,
+   * como las etiquetas. Hace falta uno más corto. */
+  --notch-xs: 6px;
 
   --clip-chevron: polygon(
     0 0,
@@ -174,6 +177,15 @@
     100% 100%,
     var(--notch-s) 100%,
     0 calc(100% - var(--notch-s))
+  );
+
+  --clip-chevron-xs: polygon(
+    0 0,
+    calc(100% - var(--notch-xs)) 0,
+    100% var(--notch-xs),
+    100% 100%,
+    var(--notch-xs) 100%,
+    0 calc(100% - var(--notch-xs))
   );
 
   --radius-none: 0px;

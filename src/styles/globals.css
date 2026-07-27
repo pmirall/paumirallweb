@@ -1,9 +1,286 @@
 @import 'tailwindcss';
 @import './tokens.css';
 
-/* Los tokens de marca se exponen a Tailwind. Las utilidades apuntan a las
-   custom properties, así que cambiar tokens.css cambia el sitio entero sin
-   tocar ningún componente. Ver docs/identidad-visual.md. */
+/* Las primitivas van dentro de @layer components para pintarse después del
+   reset y antes de las utilidades. Tailwind v4 con Lightning CSS no resuelve
+   @import externos, así que el contenido va en línea. Ver src/styles/. */
+@layer components {
+/* Primitivas del sistema de diseño.
+ *
+ * Van en CSS y no en utilidades de Tailwind porque el lenguaje de la marca se
+ * apoya en clip-path y en drop-shadow con valores de token, y expresar eso con
+ * utilidades obligaría a clases de valor arbitrario, que están prohibidas.
+ * Las utilidades se siguen usando para maquetar. Ver docs/design-system.md.
+ */
+
+/* --- Botón: la prensa mecánica ------------------------------------------ */
+.pm-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+  min-height: 44px;
+  padding-inline: var(--sp-6);
+  border: 0;
+  cursor: pointer;
+  text-decoration: none;
+  font-family: var(--font-ui);
+  font-weight: var(--fw-bold);
+  font-size: var(--fs-body-s);
+  font-stretch: 88%;
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  /* clip-path recorta el box-shadow, así que la sombra va con drop-shadow. */
+  clip-path: var(--clip-chevron-s);
+  filter: drop-shadow(3px 3px 0 rgb(26 27 27 / 0.9));
+  transition:
+    transform var(--dur) var(--ease-out),
+    filter var(--dur) var(--ease-out),
+    background-color var(--dur) var(--ease-out);
+}
+.pm-btn:hover:not(:disabled) {
+  transform: translate(-3px, -3px);
+  filter: drop-shadow(6px 6px 0 rgb(26 27 27 / 0.9));
+}
+.pm-btn:active:not(:disabled) {
+  transform: translate(3px, 3px);
+  filter: drop-shadow(0 0 0 rgb(26 27 27 / 0));
+}
+.pm-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  filter: none;
+}
+.pm-btn--primary {
+  background: var(--pm-ink);
+  color: var(--text-on-ink);
+}
+.pm-btn--primary:hover:not(:disabled) {
+  background: var(--pm-emerald-dark);
+}
+.pm-btn--ghost {
+  background: var(--pm-white);
+  color: var(--pm-ink);
+}
+.pm-btn--accent {
+  background: var(--pm-teal);
+  color: var(--text-on-accent);
+}
+.pm-btn--sm {
+  min-height: 44px;
+  padding-inline: var(--sp-4);
+  font-size: var(--fs-caption);
+}
+
+/* --- Epígrafe ----------------------------------------------------------- */
+.pm-eyebrow {
+  display: block;
+  font: var(--type-eyebrow);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  margin: 0;
+}
+/* Esmeralda normal sobre hueso se queda en 3.81:1, así que va el oscuro. */
+.pm-eyebrow--on-bone {
+  color: var(--pm-emerald-dark);
+}
+.pm-eyebrow--on-ink {
+  color: var(--pm-teal);
+}
+/* Sobre turquesa, el esmeralda profundo cae a 3.13:1. Va tinta. */
+.pm-eyebrow--on-accent {
+  color: var(--pm-ink);
+}
+
+/* --- Etiqueta de categoría o estado -------------------------------------- */
+.pm-tag {
+  display: inline-flex;
+  align-items: center;
+  font: var(--type-eyebrow);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  padding: 2px var(--sp-2);
+  border: var(--border-w) solid currentColor;
+  clip-path: var(--clip-chevron-xs);
+}
+.pm-tag--neutral {
+  color: var(--pm-graphite);
+}
+.pm-tag--accent {
+  color: var(--pm-emerald-dark);
+}
+.pm-tag--ok {
+  color: var(--state-ok);
+  background: var(--state-ok-surface);
+}
+.pm-tag--notice {
+  color: var(--state-notice);
+  background: var(--state-notice-surface);
+}
+.pm-tag--error {
+  color: var(--state-error);
+  background: var(--state-error-surface);
+}
+
+/* --- Placa: el contenedor de toda imagen --------------------------------- */
+.pm-plate {
+  position: relative;
+  overflow: hidden;
+  clip-path: var(--clip-chevron);
+  background: var(--pm-emerald-deep);
+  isolation: isolate;
+}
+.pm-plate::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: var(--texture);
+  background-size: var(--texture-size);
+  opacity: 0.35;
+  mix-blend-mode: overlay;
+}
+.pm-plate > img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+.pm-plate__note {
+  position: absolute;
+  inset: var(--sp-5) var(--sp-4) auto;
+  z-index: 2;
+  text-align: center;
+  font: var(--type-eyebrow);
+  letter-spacing: var(--tracking-eyebrow);
+  text-transform: uppercase;
+  color: var(--pm-teal);
+  opacity: 0.55;
+}
+
+/* --- Campo de formulario -------------------------------------------------- */
+.pm-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+.pm-field__label {
+  font-family: var(--font-ui);
+  font-weight: var(--fw-semibold);
+  font-size: var(--fs-body-s);
+  font-stretch: 88%;
+}
+.pm-field__input {
+  min-height: 44px;
+  padding: var(--sp-2) var(--sp-3);
+  border: var(--border-w) solid var(--border-strong);
+  border-radius: var(--radius-none);
+  background: var(--surface-card);
+  color: var(--text-body);
+  font: var(--type-body);
+}
+.pm-field__input[aria-invalid='true'] {
+  border-color: var(--state-error);
+}
+.pm-field__hint {
+  font-size: var(--fs-caption);
+  color: var(--text-muted);
+}
+.pm-field__error {
+  font-size: var(--fs-caption);
+  color: var(--state-error);
+  font-weight: var(--fw-semibold);
+}
+
+/* --- Estado vacío --------------------------------------------------------- */
+.pm-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-7);
+  border: var(--border-w) dashed var(--border-hairline);
+}
+.pm-empty__title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: var(--fw-black);
+  font-stretch: 88%;
+  font-size: var(--fs-display-s);
+  margin: 0;
+}
+.pm-empty__body {
+  margin: 0;
+  color: var(--text-muted);
+  max-width: 48ch;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pm-btn {
+    transition: none;
+  }
+}
+
+/* --- Pantalla de muestra de la fase 0 ------------------------------------- */
+.pm-sample {
+  min-height: 100svh;
+  display: grid;
+  align-content: center;
+  background: var(--surface-accent);
+  padding: var(--section-y) var(--page-pad);
+}
+.pm-sample__hero {
+  width: 100%;
+  max-width: var(--maxw-page);
+  margin-inline: auto;
+}
+.pm-sample__band {
+  margin-top: var(--sp-5);
+  filter: drop-shadow(14px 14px 0 rgb(26 27 27 / 0.9));
+}
+.pm-sample__plaque {
+  position: relative;
+  z-index: 2;
+  margin-top: clamp(-96px, -7vw, -56px);
+  width: min(88%, 900px);
+  background: var(--pm-ink);
+  clip-path: var(--clip-chevron);
+  padding: var(--sp-5) var(--sp-7) var(--sp-6);
+}
+.pm-sample__wordmark {
+  margin: 0;
+  color: var(--text-on-ink);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: var(--fw-black);
+  font-stretch: 88%;
+  font-size: var(--fs-display-l);
+  line-height: var(--lh-display);
+  letter-spacing: var(--tracking-display);
+}
+.pm-sample__lead {
+  font: var(--type-lead);
+  /* Sobre turquesa el texto legible va en tinta. Ver docs/landing.md. */
+  color: var(--pm-ink);
+  max-width: 38ch;
+  margin: var(--sp-6) 0 0;
+}
+.pm-sample__cta {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+  margin-top: var(--sp-5);
+}
+.pm-sample__tags {
+  display: flex;
+  gap: var(--sp-2);
+  flex-wrap: wrap;
+  margin-top: var(--sp-6);
+}
+
+}
+
 @theme inline {
   --color-ink: var(--pm-ink);
   --color-ink-soft: var(--pm-ink-soft);
@@ -27,11 +304,11 @@
   --font-serif: var(--font-bitter);
   --font-sans: var(--font-archivo);
 
-  --radius-none: var(--radius-none);
-  --radius-xs: var(--radius-xs);
+  --radius-none: 0px;
+  --radius-xs: 2px;
 
-  --ease-out: var(--ease-out);
-  --ease-snap: var(--ease-snap);
+  --ease-out: cubic-bezier(0.2, 0.7, 0.3, 1);
+  --ease-snap: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 *,
