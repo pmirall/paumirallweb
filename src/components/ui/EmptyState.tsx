@@ -9,15 +9,19 @@ export function EmptyState({
   body,
   action,
   className,
+  /** El nivel se pasa desde fuera: el correcto depende de lo que haya encima. */
+  level = 3,
 }: {
   title: string
   body: string
   action?: React.ReactNode
   className?: string
+  level?: 2 | 3 | 4
 }) {
+  const Heading = `h${level}` as 'h2' | 'h3' | 'h4'
   return (
     <div className={cn('pm-empty', className)}>
-      <h3 className="pm-empty__title">{title}</h3>
+      <Heading className="pm-empty__title">{title}</Heading>
       <p className="pm-empty__body">{body}</p>
       {action}
     </div>

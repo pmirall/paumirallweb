@@ -6,8 +6,18 @@ import { z } from 'zod'
  * más adelante. Ninguna lleva el prefijo NEXT_PUBLIC_: nada de esto puede
  * llegar al navegador. Ver docs/seguridad-y-privacidad.md.
  */
+/**
+ * En producción SITE_URL es obligatoria: con el valor por defecto, el sitemap se
+ * publicaría con URL a localhost y nada fallaría. Durante el build no se exige,
+ * porque construir no debería necesitar la configuración de ejecución.
+ */
+const isBuild = process.env.NEXT_PHASE === 'phase-production-build'
+const requireSiteUrl = process.env.NODE_ENV === 'production' && !isBuild
+
 const schema = z.object({
-  SITE_URL: z.string().url().default('http://localhost:3000'),
+  SITE_URL: requireSiteUrl
+    ? z.string().url()
+    : z.string().url().default('http://localhost:3000'),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 
   // Se vuelven obligatorias en la fase 1, cuando exista base de datos.

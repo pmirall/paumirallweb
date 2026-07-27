@@ -212,6 +212,15 @@ La primera fase que ve alguien de fuera, y la primera con la marca puesta de
 verdad. El texto con el que sale está en `contenido-de-lanzamiento.md`; no se
 redacta nada nuevo salvo lo que allí falte.
 
+Estado: las once rutas públicas están construidas y en verde, con sus esqueletos
+de carga, su manejador de error de zona, sitemap, robots y 404 con estado 404 de
+verdad. Falta lo que necesita base de datos: que los proyectos, las tarifas y los
+textos salgan de Postgres en vez de de `src/lib` y `src/content`, y que el
+formulario escriba en `leads` y avise con Resend. La forma del dato ya es la
+definitiva, así que ese cambio no toca ningún componente.
+
+También falta el editor de portfolio del admin y la analítica.
+
 ### Qué se hace
 
 Layout público con cabecera, pie y navegación.

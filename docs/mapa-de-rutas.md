@@ -14,7 +14,7 @@ Layout `(public)`. Cabecera, pie y navegación comunes. Indexable.
 | Ruta | Renderizado | Notas |
 |---|---|---|
 | `/` | estático | hero, tres proyectos destacados, servicios, bloque sobre mí |
-| `/trabajo` | estático | filtros por categoría en la URL, `?cat=artista` |
+| `/trabajo` | servidor | filtros por categoría en la URL, `?cat=artista` |
 | `/trabajo/:slug` | estático | `generateStaticParams` desde `job_publications`, metadatos propios |
 | `/servicios` | estático | lee `services`, más el bloque de "nada de esto encaja" |
 | `/sobre-mi` | estático | lee `pages` |
@@ -23,10 +23,26 @@ Layout `(public)`. Cabecera, pie y navegación comunes. Indexable.
 | `/legal/aviso-legal` | estático | lee `pages` |
 | `/legal/privacidad` | estático | lee `pages` |
 | `/legal/cookies` | estático | lee `pages` |
-| `/404` | estático | enlaza a portada y archivo |
+| `/404` | estático | no es una ruta: la sirve `not-found.tsx` con estado 404 real |
 
 Los filtros de `/trabajo` van en la query, no en el segmento de ruta, para no
-multiplicar URL indexables por categorías que comparten contenido. La categoría
+multiplicar URL indexables por categorías que comparten contenido. Leer la query
+en el servidor hace que la ruta sea dinámica en vez de estática; se acepta,
+porque el archivo no es la página que más tráfico recibe y así el filtro funciona
+sin JavaScript.
+
+Una categoría desconocida no devuelve el listado entero: devuelve vacío y enseña
+el estado vacío. Devolver todo dejaría al visitante viendo la lista completa sin
+ningún filtro marcado y sin entender por qué.
+
+El 404 no es una ruta que se pueda visitar. Lo sirve `not-found.tsx`, que existe
+dos veces: en la zona pública para los `notFound()` de sus rutas, y en la raíz
+para las URL que no encajan en ninguna, porque Next solo usa esa para el caso
+general y no pasa por el layout de zona. Las dos comparten componente.
+
+Las rutas con parámetro llevan `dynamicParams = false`: el conjunto de proyectos
+y de páginas legales se conoce en el build, así que un slug que no esté en la
+lista devuelve un 404 de verdad y no un 200 con la página de error. La categoría
 sin proyectos muestra un estado vacío con enlace a las demás, nunca una página en
 blanco.
 

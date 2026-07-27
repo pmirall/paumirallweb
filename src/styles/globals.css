@@ -799,3 +799,129 @@ body {
     .pm-js .pm-rise { opacity: 1; transform: none; transition: none; }
   }
 }
+
+
+/* --- páginas interiores --- */
+@layer components {
+  .pm-page { padding-top: calc(var(--sp-11) + var(--sp-3)); }
+  .pm-page__title {
+    font-family: var(--font-display);
+    font-style: italic;
+    font-weight: var(--fw-black);
+    font-stretch: 88%;
+    font-size: var(--fs-display-m);
+    line-height: var(--lh-heading);
+    letter-spacing: var(--tracking-display);
+    margin: 0 0 var(--sp-4);
+  }
+  .pm-prose-wrap { max-width: var(--maxw-prose); }
+  .pm-prose { font: var(--type-body); line-height: var(--lh-body); margin: 0 0 var(--sp-4); max-width: var(--measure); }
+  .pm-notice {
+    border-left: var(--border-w-thick) solid var(--state-notice);
+    background: var(--state-notice-surface);
+    padding: var(--sp-3) var(--sp-4);
+    margin: 0 0 var(--sp-5);
+    font-size: var(--fs-body-s);
+  }
+
+  .pm-filters { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin: var(--sp-6) 0 var(--sp-8); }
+  .pm-filter {
+    padding-inline: var(--sp-4);
+    justify-content: center;
+    font-family: var(--font-ui);
+    font-weight: var(--fw-bold);
+    font-size: var(--fs-caption);
+    font-stretch: 88%;
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    text-decoration: none;
+    color: var(--pm-ink);
+    border: var(--border-w) solid var(--border-hairline);
+    clip-path: var(--clip-chevron-xs);
+    transition: background-color var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
+  }
+  .pm-filter:hover { border-color: var(--border-strong); }
+  .pm-filter[aria-current='page'] { background: var(--pm-ink); color: var(--text-on-ink); border-color: var(--pm-ink); }
+
+  .pm-facts { display: flex; flex-wrap: wrap; gap: var(--sp-6); margin: var(--sp-6) 0 var(--sp-8); }
+  .pm-facts dt {
+    font: var(--type-eyebrow);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--pm-emerald-dark);
+    margin-bottom: var(--sp-1);
+  }
+  .pm-facts dd { margin: 0; font-weight: var(--fw-semibold); }
+
+  .pm-gallery { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--sp-5); }
+  .pm-gallery__item:first-child { grid-column: 1 / -1; }
+  .pm-prevnext {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--sp-5);
+    margin-top: var(--sp-9);
+    padding-top: var(--sp-5);
+    border-top: var(--border-w) solid var(--border-hairline);
+  }
+  @media (max-width: 900px) { .pm-gallery { grid-template-columns: 1fr; } }
+
+  .pm-services--page .pm-card { gap: var(--sp-4); }
+  .pm-services--page .pm-card .pm-btn { align-self: flex-start; }
+
+  /* --- formulario --- */
+  .pm-contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-8); align-items: start; }
+  .pm-form { display: flex; flex-direction: column; gap: var(--sp-5); }
+  .pm-form .pm-btn { align-self: flex-start; }
+  .pm-field__input--area { min-height: 140px; resize: vertical; font: var(--type-body); }
+  /* La casilla se ve de 22px pero el objetivo táctil es la etiqueta entera,
+     que pasa de 44px de alto. Pulsar el texto marca la casilla. */
+  .pm-field--check label {
+    display: flex;
+    gap: var(--sp-3);
+    align-items: center;
+    cursor: pointer;
+    min-height: 44px;
+    padding-block: var(--sp-2);
+  }
+  .pm-field--check input {
+    flex: none;
+    width: 22px;
+    height: 22px;
+    accent-color: var(--pm-emerald-dark);
+  }
+  .pm-trap { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+  .pm-contact__direct { display: flex; flex-direction: column; gap: var(--sp-4); margin: var(--sp-7) 0 0; }
+  .pm-contact__direct dt {
+    font: var(--type-eyebrow);
+    letter-spacing: var(--tracking-label);
+    text-transform: uppercase;
+    color: var(--pm-emerald-dark);
+  }
+  .pm-contact__direct dd { margin: 0; }
+  .pm-contact__direct a { color: var(--pm-ink); font-weight: var(--fw-semibold); }
+  @media (max-width: 900px) { .pm-contact-grid { grid-template-columns: 1fr; gap: var(--sp-6); } }
+}
+
+
+/* --- esqueletos de carga --- */
+@layer components {
+  .pm-sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+  .pm-skeleton {
+    background: var(--surface-inset);
+    clip-path: var(--clip-chevron-xs);
+    animation: pm-pulse 1.4s var(--ease-in-out) infinite;
+  }
+  .pm-skeleton--title { height: 48px; width: min(60%, 420px); margin-bottom: var(--sp-5); }
+  .pm-skeleton--line { height: 16px; width: min(80%, 560px); margin-bottom: var(--sp-3); }
+  .pm-skeleton--short { width: min(50%, 340px); margin-bottom: var(--sp-8); }
+  .pm-skeleton--plate { aspect-ratio: 4 / 5; clip-path: var(--clip-chevron); }
+  @keyframes pm-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.55; } }
+  @media (prefers-reduced-motion: reduce) { .pm-skeleton { animation: none; } }
+}
