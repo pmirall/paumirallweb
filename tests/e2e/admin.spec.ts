@@ -136,3 +136,32 @@ test('anotar horas suma al total del encargo', async ({ page }, testInfo) => {
   // El total cambia, así que la nueva hora se ha guardado.
   await expect(page.locator('.pm-time-total strong')).not.toHaveText(before ?? '')
 })
+
+test('la cola de enriquecimiento sincroniza y convierte una carpeta en encargo', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'muta datos; un solo proyecto')
+
+  await page.goto('/admin/login')
+  await page.getByRole('button', { name: 'Entrar en modo desarrollo' }).click()
+  await page.waitForURL('**/admin')
+
+  // Sincroniza contra el Drive de prueba.
+  await page.goto('/admin/drive')
+  await page.getByRole('button', { name: 'Sincronizar ahora' }).click()
+  await page.waitForLoadState('networkidle')
+
+  await page.goto('/admin/drive/cola')
+  // Una fecha imposible se marca dudosa, no se inventa.
+  await expect(page.getByText('fecha dudosa')).toBeVisible()
+
+  // Enriquece la fila de Marlene, que trae el cliente sugerido.
+  const marlene = page.locator('tr', { hasText: 'Marlene.25.07.01' })
+  await expect(marlene.locator('input[name="clientName"]')).toHaveValue('Marlene')
+  await marlene.getByRole('button', { name: 'Crear encargo' }).click()
+  await page.waitForLoadState('networkidle')
+
+  // El encargo aparece en la lista con el cliente y la fecha de la carpeta.
+  await page.goto('/admin/encargos')
+  await expect(page.getByText('Marlene.25.07.01')).toBeVisible()
+})

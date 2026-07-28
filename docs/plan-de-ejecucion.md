@@ -191,9 +191,17 @@ migración; y el recorrido del árbol de hasta tres niveles que deja cada carpet
 en la cola con su sugerencia de cliente y fecha, usa el año de la carpeta
 contenedora como contexto, no cuenta los `.psd` y no reinserta lo ya visto.
 
-Falta: la pantalla de la cola de enriquecimiento, la generación de derivadas, el
-cruce con Google Calendar y la sincronización real, que necesita credenciales de
-Google. El adaptador falso permite construir y probar todo lo demás.
+Hecho también: la pantalla de estado de Drive con la sincronización de prueba, y
+la cola de enriquecimiento, que es una de las cinco pantallas que importan. Una
+carpeta por fila, con el cliente y la fecha sugeridos, la fecha dudosa marcada en
+vez de inventada, el recuento de archivos sin los `.psd`, y las tres acciones:
+crear encargo, marcar contenedor, ignorar. Enriquecer crea el cliente si no
+existe, numera el código con el año de la carpeta y enlaza el encargo a la
+carpeta de Drive.
+
+Falta: la generación de derivadas, el cruce con Google Calendar y la
+sincronización real, que necesita credenciales de Google. El adaptador falso
+permite construir y probar todo lo demás.
 
 ### Qué se hace
 

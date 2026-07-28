@@ -12,6 +12,7 @@ export const adminNav = [
   { label: 'Encargos', href: '/admin/encargos' },
   { label: 'Clientes', href: '/admin/clientes' },
   { label: 'Consultas', href: '/admin/leads' },
+  { label: 'Drive', href: '/admin/drive' },
 ] as const
 
 export const adminChrome = {
@@ -155,4 +156,46 @@ export const newJobPage = {
   noClients: 'Primero necesitas un cliente. Convierte una consulta o crea uno.',
   errorClient: 'Elige un cliente.',
   errorTitle: 'Ponle un título, aunque sea provisional.',
+} as const
+
+export const drivePage = {
+  title: 'Drive',
+  subtitle: 'Estado de la sincronización con tus carpetas.',
+  runSync: 'Sincronizar ahora',
+  lastRun: 'Última pasada',
+  never: 'todavía no se ha sincronizado',
+  foldersSeen: 'Carpetas vistas',
+  foldersNew: 'Carpetas nuevas',
+  filesNew: 'Archivos nuevos',
+  errors: 'Errores',
+  queueLink: 'Ir a la cola de enriquecimiento',
+  fakeNotice: 'Sincronización de desarrollo contra un Drive de prueba. La real llega con las credenciales de Google.',
+} as const
+
+export const queuePage = {
+  title: 'Cola de enriquecimiento',
+  subtitle: 'Una carpeta por fila. Di qué es cada una.',
+  empty: 'No hay carpetas pendientes. Sincroniza para detectar nuevas.',
+  filterPending: 'Pendientes',
+  filterAll: 'Todas',
+  columns: {
+    folder: 'Carpeta',
+    files: 'Archivos',
+    client: 'Cliente',
+    date: 'Fecha',
+    category: 'Categoría',
+    status: 'Estado',
+  },
+  ambiguous: 'fecha dudosa',
+  noDate: 'sin fecha',
+  publishLabel: 'Publicar en el portfolio',
+  enrich: 'Crear encargo',
+  markContainer: 'Es un contenedor',
+  ignore: 'Ignorar',
+  queueStatusLabels: {
+    pending: 'Pendiente',
+    enriched: 'Enriquecida',
+    ignored: 'Ignorada',
+    container: 'Contenedor',
+  },
 } as const
