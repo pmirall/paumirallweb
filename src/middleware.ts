@@ -13,6 +13,8 @@ export async function middleware(request: NextRequest) {
 
   const isAdmin = pathname.startsWith('/admin')
   const isClient = pathname.startsWith('/c/')
+  // El presupuesto público se abre con un token, como la galería: no se indexa.
+  const isQuote = pathname.startsWith('/p/')
 
   if (isAdmin && pathname !== '/admin/login') {
     const session = await verifySession(request.cookies.get(ADMIN_COOKIE)?.value)
@@ -26,7 +28,7 @@ export async function middleware(request: NextRequest) {
 
   const response = NextResponse.next()
 
-  if (isAdmin || isClient) {
+  if (isAdmin || isClient || isQuote) {
     response.headers.set('X-Robots-Tag', 'noindex, nofollow')
     response.headers.set('Cache-Control', 'private, no-store')
   }

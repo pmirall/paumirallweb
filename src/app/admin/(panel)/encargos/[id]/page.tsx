@@ -6,11 +6,14 @@ import { listTimeEntries, totalMinutesByJob } from '@/db/queries/time-entries'
 import { hasPendingDeliverables } from '@/db/queries/jobs'
 import { getGalleryForJob, listSubmittedFavorites } from '@/db/queries/admin-gallery'
 import { listExpensesByJob, sumExpensesByJob } from '@/db/queries/expenses'
+import { listQuotesByJob } from '@/db/queries/quotes'
 import { isGalleryOpen } from '@/lib/gallery/status'
 import { computeProfitability } from '@/lib/finance/profitability'
 import { env } from '@/lib/env'
 import { PageHeader } from '@/components/admin/PageHeader'
 import { GalleryPanel } from '@/components/admin/GalleryPanel'
+import { QuoteEditor } from '@/components/admin/QuoteEditor'
+import { QuotesList } from '@/components/admin/QuotesList'
 import { EmptyState, Tag, buttonClass } from '@/components/ui'
 import {
   jobCategoryLabels,
@@ -55,9 +58,10 @@ export default async function JobDetailPage({
   const submitted =
     active === 'galeria' && galleryRow ? await listSubmittedFavorites(database, galleryRow.id) : []
 
-  // Los gastos solo en la pestaña de dinero.
+  // Los gastos y presupuestos solo en la pestaña de dinero.
   const expensesTotal = active === 'dinero' ? await sumExpensesByJob(database, id) : 0
   const expenseList = active === 'dinero' ? await listExpensesByJob(database, id) : []
+  const quoteList = active === 'dinero' ? await listQuotesByJob(database, id) : []
 
   return (
     <>
@@ -299,6 +303,13 @@ export default async function JobDetailPage({
               {money.eurosPerHour != null ? (
                 <p className="pm-field__hint">{jobDetail.money.perHourHint}</p>
               ) : null}
+
+              <section className="pm-money__quotes">
+                <h2 className="pm-money__h2">{jobDetail.quotes.title}</h2>
+                <QuotesList jobId={id} quotes={quoteList} siteUrl={env.SITE_URL} />
+                <h3 className="pm-money__h3">{jobDetail.quotes.newTitle}</h3>
+                <QuoteEditor jobId={id} />
+              </section>
 
               <section className="pm-money__expenses">
                 <h2 className="pm-money__h2">{jobDetail.money.expensesTitle}</h2>

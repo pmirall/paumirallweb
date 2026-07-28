@@ -1373,6 +1373,24 @@ body {
   .pm-expenseform { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; margin-bottom: var(--sp-4); }
   .pm-expenseform__amount { max-width: 9rem; }
   .pm-expenseform__desc { min-width: 12rem; flex: 1 1 12rem; }
+  .pm-money__h3 {
+    font-family: var(--font-ui); font-weight: var(--fw-bold); font-stretch: 88%;
+    font-size: var(--fs-caption); letter-spacing: var(--tracking-label); text-transform: uppercase;
+    color: var(--text-muted); margin: var(--sp-5) 0 var(--sp-3);
+  }
+  .pm-money__quotes, .pm-money__expenses { border-top: var(--border-w) solid var(--border-hairline); padding-top: var(--sp-4); }
+
+  /* --- editor de presupuesto --- */
+  .pm-quoteform { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .pm-quoteform__lines { display: flex; flex-direction: column; gap: var(--sp-2); }
+  .pm-quoteform__line { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; }
+  .pm-quoteform__desc { flex: 1 1 14rem; min-width: 12rem; }
+  .pm-quoteform__num { width: 6.5rem; }
+  .pm-quoteform__meta { display: flex; flex-wrap: wrap; gap: var(--sp-4); }
+  .pm-quoteform__notes { flex: 1 1 16rem; }
+  .pm-quoteform__foot { display: flex; flex-wrap: wrap; gap: var(--sp-4); align-items: center; justify-content: space-between; }
+  .pm-quoteform__total { font-size: var(--fs-body-l); }
+  .pm-quotes__actions { display: flex; gap: var(--sp-2); align-items: center; flex-wrap: wrap; }
 
   /* --- finanzas --- */
   .pm-finance__h2 {
@@ -1438,6 +1456,23 @@ body {
   }
   .pm-deliverables__what { display: block; font: var(--type-body); }
   .pm-deliverables__kind { display: block; font-size: var(--fs-caption); color: var(--text-faint); }
+
+  /* --- presupuesto público --- */
+  .pm-quote { max-width: 44rem; margin-inline: auto; }
+  .pm-quote__title {
+    font-family: var(--font-display); font-style: italic; font-weight: var(--fw-black);
+    font-stretch: 88%; font-size: var(--fs-display-s); letter-spacing: var(--tracking-display);
+    margin: var(--sp-2) 0 var(--sp-1);
+  }
+  .pm-quote__valid { font-size: var(--fs-body-s); color: var(--text-muted); margin: 0 0 var(--sp-5); }
+  .pm-quote__table { margin-bottom: var(--sp-4); }
+  .pm-quote__totals { display: flex; flex-direction: column; gap: var(--sp-2); margin: 0 0 var(--sp-5); }
+  .pm-quote__totals div { display: flex; justify-content: space-between; gap: var(--sp-4); }
+  .pm-quote__totals dt, .pm-quote__totals dd { margin: 0; }
+  .pm-quote__grand { font-size: var(--fs-body-l); font-weight: var(--fw-bold); border-top: var(--border-w) solid var(--border-hairline); padding-top: var(--sp-2); }
+  .pm-quote__h2 { font-family: var(--font-serif); font-size: var(--fs-body-l); font-weight: var(--fw-bold); margin: var(--sp-5) 0 var(--sp-2); }
+  .pm-quote__notes { margin-bottom: var(--sp-5); }
+  .pm-quote__actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); margin-top: var(--sp-6); }
 
   /* --- puerta --- */
   .pm-gate { max-width: 34rem; margin: var(--sp-8) auto; }

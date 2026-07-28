@@ -1,5 +1,5 @@
 import { createDatabase } from './client'
-import { galleries, mediaAssets, mediaDerivatives } from './schema'
+import { galleries, mediaAssets, mediaDerivatives, quoteLines, quotes } from './schema'
 import { hashPin } from '@/lib/gallery/pin'
 import { clients, deliverables, expenses, jobPublications, jobs, leads, timeEntries } from './schema'
 import { deriveAsset } from '@/lib/media/derive'
@@ -76,8 +76,10 @@ export async function seed(db: Awaited<ReturnType<typeof createDatabase>>) {
     ])
     .returning()
 
-  const [retrato, trail, video] = created
-  if (!retrato || !trail || !video) throw new Error('No se han creado los encargos.')
+  const [retrato, trail, video, gira, maraton] = created
+  if (!retrato || !trail || !video || !gira || !maraton) {
+    throw new Error('No se han creado los encargos.')
+  }
 
   await db.insert(jobPublications).values([
     {
@@ -123,6 +125,47 @@ export async function seed(db: Awaited<ReturnType<typeof createDatabase>>) {
     { jobId: trail.id, amountCents: 3200, description: 'Gasolina y peajes', category: 'travel', spentOn: '2025-10-05' },
     { jobId: trail.id, amountCents: 1800, description: 'Comida en ruta', category: 'travel', spentOn: '2025-10-05' },
   ])
+
+  // Dos presupuestos enviados con enlace público fijo en desarrollo. Uno para
+  // mirar (sobre la media maratón, en borrador) y otro para aceptar sin efectos
+  // colaterales en las métricas (sobre la sesión de gira, ya confirmada, así que
+  // aceptarlo no cambia el recuento de encargos activos).
+  const quoteRows = await db
+    .insert(quotes)
+    .values([
+      {
+        number: 'P-2026-001',
+        jobId: maraton.id,
+        clientId: maraton.clientId,
+        status: 'sent',
+        publicToken: 'DEV0PRESUPUESTO',
+        validUntil: '2026-09-30',
+        subtotalCents: 50000,
+        taxCents: 10500,
+        totalCents: 60500,
+        notes: 'Incluye salida y meta. La edición se entrega en dos semanas.',
+        sentAt: new Date(),
+      },
+      {
+        number: 'P-2026-002',
+        jobId: gira.id,
+        clientId: gira.clientId,
+        status: 'sent',
+        publicToken: 'DEV0PRESUPUESTO0OK',
+        validUntil: '2026-10-31',
+        subtotalCents: 50000,
+        taxCents: 10500,
+        totalCents: 60500,
+        sentAt: new Date(),
+      },
+    ])
+    .returning()
+  for (const q of quoteRows) {
+    await db.insert(quoteLines).values([
+      { quoteId: q.id, description: 'Cobertura de carrera', quantity: 1, unitPriceCents: 40000, taxRate: 21, sortOrder: 0 },
+      { quoteId: q.id, description: 'Desplazamiento', quantity: 2, unitPriceCents: 5000, taxRate: 21, sortOrder: 1 },
+    ])
+  }
 
   // Fotos de ejemplo para la galería entregada. Alternan vertical y horizontal
   // para que la rejilla se vea como una entrega real. Las derivadas son

@@ -181,9 +181,12 @@ test('anotar un gasto lo añade a la lista del encargo', async ({ page }, testIn
   await page.waitForURL(/\/admin\/encargos\/.+/)
   await page.getByRole('link', { name: 'Dinero' }).click()
 
-  await page.getByLabel('Importe en euros').fill('24.5')
-  await page.getByLabel('Concepto').fill('Batería de repuesto')
-  await page.getByLabel('Día').fill('2025-10-05')
+  // El formulario de gasto comparte la etiqueta "Concepto" con el editor de
+  // presupuesto, así que se acota al formulario de gasto para no ser ambiguo.
+  const form = page.locator('.pm-expenseform')
+  await form.getByLabel('Importe en euros').fill('24.5')
+  await form.getByLabel('Concepto').fill('Batería de repuesto')
+  await form.getByLabel('Día').fill('2025-10-05')
   await page.getByRole('button', { name: 'Anotar gasto' }).click()
   await page.waitForLoadState('networkidle')
 

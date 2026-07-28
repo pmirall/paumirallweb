@@ -2,13 +2,16 @@
 
 import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
+import { z } from 'zod'
 import { db } from '@/db/client'
 import {
   changeJobStatus,
+  getJobDetail,
   setDeliverableDelivered,
   updateJobNotes,
 } from '@/db/queries/job-mutations'
 import { addTimeEntry } from '@/db/queries/time-entries'
+import { createQuote, markQuoteSent, type QuoteLineDraft } from '@/db/queries/quotes'
 import {
   createGalleryForJob,
   getGalleryForJob,
@@ -108,6 +111,57 @@ export async function revokeGalleryAction(jobId: string): Promise<GalleryActionR
   await revokeGallery(database, gallery.id)
   revalidatePath(`/admin/encargos/${jobId}`)
   return { ok: true }
+}
+
+const quoteLineSchema = z.object({
+  description: z.string().trim().min(1).max(300),
+  quantity: z.number().int().positive().max(9999),
+  unitEuros: z.number().nonnegative().max(1_000_000),
+  taxRate: z.number().int().min(0).max(100),
+})
+const quoteLinesSchema = z.array(quoteLineSchema).min(1).max(50)
+
+/**
+ * Crea un presupuesto para el encargo. Las líneas llegan en un campo JSON que el
+ * editor mantiene; se validan con Zod y el importe se pasa a céntimos aquí, no en
+ * el navegador. El cliente del presupuesto es el del encargo.
+ */
+export async function createQuoteAction(jobId: string, formData: FormData) {
+  const email = await requireEmail()
+  const database = await db()
+  const detail = await getJobDetail(database, jobId)
+  if (!detail) return
+
+  let parsedLines: unknown
+  try {
+    parsedLines = JSON.parse(String(formData.get('lines') ?? '[]'))
+  } catch {
+    return
+  }
+  const lines = quoteLinesSchema.safeParse(parsedLines)
+  if (!lines.success) return
+
+  const draft: QuoteLineDraft[] = lines.data.map((l) => ({
+    description: l.description,
+    quantity: l.quantity,
+    unitPriceCents: Math.round(l.unitEuros * 100),
+    taxRate: l.taxRate,
+  }))
+  const validUntil = String(formData.get('validUntil') ?? '') || null
+  const notes = String(formData.get('notes') ?? '').trim() || null
+
+  await createQuote(
+    database,
+    { jobId, clientId: detail.job.clientId, year: new Date().getFullYear(), validUntil, notes, lines: draft },
+    email,
+  )
+  revalidatePath(`/admin/encargos/${jobId}`)
+}
+
+export async function markQuoteSentAction(jobId: string, quoteId: string) {
+  const email = await requireEmail()
+  await markQuoteSent(await db(), quoteId, new Date(), email)
+  revalidatePath(`/admin/encargos/${jobId}`)
 }
 
 export async function addExpenseAction(jobId: string, formData: FormData) {

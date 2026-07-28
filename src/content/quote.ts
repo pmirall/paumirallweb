@@ -1,0 +1,23 @@
+/** Textos del presupuesto público. En español, para quien aún no es cliente. */
+export const quoteView = {
+  eyebrow: 'Presupuesto',
+  validUntil: (d: string) => `Válido hasta el ${d}`,
+  noExpiry: 'Sin fecha de caducidad',
+  colConcept: 'Concepto',
+  colQty: 'Cantidad',
+  colUnit: 'Precio',
+  colLineTotal: 'Total',
+  subtotal: 'Base',
+  tax: 'IVA',
+  total: 'Total',
+  accept: 'Aceptar el presupuesto',
+  reject: 'Ahora no',
+  acceptedTitle: 'Presupuesto aceptado',
+  acceptedBody: 'Gracias. Me pongo con ello y te escribo para cerrar los detalles.',
+  rejectedTitle: 'Presupuesto rechazado',
+  rejectedBody: 'Sin problema. Si cambias de idea, escríbeme y lo retomamos.',
+  expiredTitle: 'Este presupuesto ya no está activo',
+  expiredBody: 'Ha caducado o ya se resolvió. Escríbeme y te preparo uno nuevo.',
+  contact: 'paumirallstudio@gmail.com',
+  notesTitle: 'Notas',
+} as const
