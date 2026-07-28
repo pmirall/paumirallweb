@@ -13,3 +13,4 @@ playwright-report/
 .env.local
 tsconfig.tsbuildinfo
 .pglite/
+.storage/

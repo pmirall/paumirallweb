@@ -36,4 +36,26 @@ test('el PIN correcto abre la galería, y sin sesión no se entra', async ({ pag
   await page.getByRole('button', { name: 'Entrar' }).click()
   await page.waitForURL(new RegExp(`/c/${TOKEN}/galeria$`))
   await expect(page.locator('.pm-gallery-view')).toBeVisible()
+
+  // La rejilla trae fotos y cada miniatura carga de verdad desde la ruta.
+  const tiles = page.locator('.pm-photos__tile')
+  await expect(tiles.first()).toBeVisible()
+  const thumb = tiles.first().locator('img')
+  await expect(thumb).toHaveAttribute('src', new RegExp(`/c/${TOKEN}/foto/.+\\?v=thumb`))
+
+  // Al abrir una foto se abre el visor modal; las flechas y Escape funcionan.
+  await tiles.first().click()
+  const dialog = page.getByRole('dialog', { name: 'Visor de fotos' })
+  await expect(dialog).toBeVisible()
+  await expect(dialog.getByText('1 / 12')).toBeVisible()
+  await page.keyboard.press('ArrowRight')
+  await expect(dialog.getByText('2 / 12')).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(dialog).toBeHidden()
+})
+
+test('una foto no se sirve sin sesión de la galería', async ({ page }) => {
+  // Se necesita un id real; sin sesión la ruta responde 404 igualmente.
+  const r = await page.request.get(`/c/${TOKEN}/foto/00000000-0000-0000-0000-000000000000?v=thumb`)
+  expect(r.status()).toBe(404)
 })

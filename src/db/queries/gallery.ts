@@ -1,7 +1,13 @@
 import { and, desc, eq, gte } from 'drizzle-orm'
 import type { Database } from '../client'
 import type { TestDatabase } from '../testing'
-import { galleries, galleryPinAttempts, gallerySessions, mediaAssets } from '../schema'
+import {
+  galleries,
+  galleryPinAttempts,
+  gallerySessions,
+  mediaAssets,
+  mediaDerivatives,
+} from '../schema'
 import { inArray } from 'drizzle-orm'
 
 type Db = Database | TestDatabase
@@ -170,4 +176,33 @@ export async function listGalleryAssets(db: Db, jobId: string) {
     })
     .from(mediaAssets)
     .where(and(eq(mediaAssets.jobId, jobId), inArray(mediaAssets.visibility, ['client', 'public'])))
+    .orderBy(mediaAssets.sortOrder, mediaAssets.filename)
+}
+
+/**
+ * La derivada que se va a servir, comprobando de paso que la foto es de este
+ * encargo y visible para el cliente. Devuelve la clave en el almacén, no bytes.
+ * Si el `variant` pedido no existe para esta foto, devuelve undefined y la ruta
+ * responde 404, sin filtrar si el problema es el permiso o la foto.
+ */
+export async function getGalleryDerivative(
+  db: Db,
+  jobId: string,
+  assetId: string,
+  variant: string,
+): Promise<{ storageKey: string } | undefined> {
+  const rows = await db
+    .select({ storageKey: mediaDerivatives.storageKey })
+    .from(mediaDerivatives)
+    .innerJoin(mediaAssets, eq(mediaAssets.id, mediaDerivatives.mediaAssetId))
+    .where(
+      and(
+        eq(mediaDerivatives.mediaAssetId, assetId),
+        eq(mediaDerivatives.variant, variant),
+        eq(mediaAssets.jobId, jobId),
+        inArray(mediaAssets.visibility, ['client', 'public']),
+      ),
+    )
+    .limit(1)
+  return rows[0]
 }

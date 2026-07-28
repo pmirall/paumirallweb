@@ -30,6 +30,9 @@ const schema = z.object({
   ADMIN_DEV_BYPASS: z.enum(['0', '1']).optional(),
   GALLERY_SESSION_SECRET: z.string().min(1).optional(),
   IP_HASH_SALT: z.string().min(1).optional(),
+  // Carpeta del almacén de derivadas en desarrollo y pruebas. En producción el
+  // almacén es Supabase Storage y esto no se usa.
+  STORAGE_DIR: z.string().min(1).optional(),
 })
 
 const parsed = schema.safeParse(process.env)

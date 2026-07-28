@@ -8,7 +8,8 @@ import {
   touchGalleryAccess,
 } from '@/db/queries/gallery'
 import { GALLERY_COOKIE, readGallerySession } from '@/lib/gallery/session'
-import { Eyebrow, Plate } from '@/components/ui'
+import { Eyebrow } from '@/components/ui'
+import { GalleryGrid } from '@/components/client/GalleryGrid'
 import { galleryView } from '@/content/gallery'
 
 export const dynamic = 'force-dynamic'
@@ -45,15 +46,7 @@ export default async function GalleryPage({ params }: { params: Promise<{ token:
       {assets.length === 0 ? (
         <p className="pm-field__hint">{galleryView.empty}</p>
       ) : (
-        <div className="pm-grid">
-          {assets.map((asset) => (
-            <Plate
-              key={asset.id}
-              ratio={asset.width && asset.height ? `${asset.width} / ${asset.height}` : '3 / 2'}
-              note={galleryView.photoAlt}
-            />
-          ))}
-        </div>
+        <GalleryGrid token={token} photos={assets} />
       )}
     </section>
   )

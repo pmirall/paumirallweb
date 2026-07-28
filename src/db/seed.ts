@@ -1,7 +1,8 @@
 import { createDatabase } from './client'
-import { galleries } from './schema'
+import { galleries, mediaAssets, mediaDerivatives } from './schema'
 import { hashPin } from '@/lib/gallery/pin'
 import { clients, deliverables, jobPublications, jobs, leads, timeEntries } from './schema'
+import { deriveAsset } from '@/lib/media/derive'
 
 /**
  * Datos con los que se puede trabajar de verdad, no tres filas de mentira.
@@ -117,6 +118,42 @@ export async function seed(db: Awaited<ReturnType<typeof createDatabase>>) {
     { jobId: trail.id, date: '2025-10-05', minutes: 300, kind: 'shoot' },
     { jobId: trail.id, date: '2025-10-05', minutes: 90, kind: 'travel' },
   ])
+
+  // Fotos de ejemplo para la galería entregada. Alternan vertical y horizontal
+  // para que la rejilla se vea como una entrega real. Las derivadas son
+  // marcadores generados; la derivación real llega con Drive de verdad.
+  const ratios = [3 / 2, 2 / 3, 3 / 2, 1, 4 / 5, 3 / 2, 2 / 3, 3 / 2, 4 / 5, 3 / 2, 1, 2 / 3]
+  const assetRows = ratios.map((ratio, i) => {
+    const w = 2400
+    const h = Math.round(w / ratio)
+    return {
+      jobId: retrato.id,
+      driveFileId: `dev-file-${i + 1}`,
+      filename: `retrato-${String(i + 1).padStart(2, '0')}.jpg`,
+      mimeType: 'image/jpeg',
+      bytes: 12_000_000,
+      width: w,
+      height: h,
+      visibility: 'client' as const,
+      deriveStatus: 'done' as const,
+      sortOrder: i,
+    }
+  })
+  const assets = await db.insert(mediaAssets).values(assetRows).returning()
+  for (const asset of assets) {
+    const ratio = (asset.width ?? 3) / (asset.height ?? 2)
+    const derived = await deriveAsset(asset.id, asset.filename, ratio)
+    await db.insert(mediaDerivatives).values(
+      derived.map((d) => ({
+        mediaAssetId: asset.id,
+        variant: d.variant,
+        storageKey: d.storageKey,
+        bytes: d.bytes,
+        width: d.width,
+        height: d.height,
+      })),
+    )
+  }
 
   // Una galería activa para el encargo entregado, con PIN 4271 y token fijo en
   // desarrollo. En producción el token es aleatorio y el PIN se envía por correo.

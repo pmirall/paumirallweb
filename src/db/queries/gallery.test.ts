@@ -1,9 +1,15 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createTestDatabase, type TestDatabase } from '../testing'
-import { clients, galleries, jobs } from '../schema'
+import { clients, galleries, jobs, mediaAssets, mediaDerivatives } from '../schema'
 import { hashPin } from '@/lib/gallery/pin'
 import { generateToken } from '@/lib/gallery/token'
-import { ipBlocked, recordPinAttempt, tokenBlockedUntil } from './gallery'
+import {
+  getGalleryDerivative,
+  ipBlocked,
+  listGalleryAssets,
+  recordPinAttempt,
+  tokenBlockedUntil,
+} from './gallery'
 
 describe('límite de intentos de PIN', () => {
   let db: TestDatabase
@@ -68,5 +74,75 @@ describe('límite de intentos de PIN', () => {
       await recordPinAttempt(db, galleryId, 'ip-a', false, old)
     }
     expect(await tokenBlockedUntil(db, galleryId, now)).toBeNull()
+  })
+})
+
+describe('derivadas de la galería', () => {
+  let db: TestDatabase
+  let jobId: string
+  let otherJobId: string
+
+  beforeEach(async () => {
+    ;({ db } = await createTestDatabase())
+    const [c] = await db.insert(clients).values({ name: 'Cliente' }).returning()
+    const [j, other] = await db
+      .insert(jobs)
+      .values([
+        { code: '2026-001', clientId: c!.id, title: 'Encargo', category: 'artist' },
+        { code: '2026-002', clientId: c!.id, title: 'Otro', category: 'artist' },
+      ])
+      .returning()
+    jobId = j!.id
+    otherJobId = other!.id
+  })
+
+  let fileCounter = 0
+  async function addAsset(job: string, visibility: 'private' | 'client' | 'public') {
+    fileCounter += 1
+    const [asset] = await db
+      .insert(mediaAssets)
+      .values({
+        jobId: job,
+        driveFileId: `f-${fileCounter}`,
+        filename: 'foto.jpg',
+        mimeType: 'image/jpeg',
+        visibility,
+      })
+      .returning()
+    await db.insert(mediaDerivatives).values([
+      { mediaAssetId: asset!.id, variant: 'thumb', storageKey: `k/${asset!.id}/thumb.svg` },
+      { mediaAssetId: asset!.id, variant: 'thumb-wm', storageKey: `k/${asset!.id}/thumb-wm.svg` },
+    ])
+    return asset!.id
+  }
+
+  it('devuelve la clave de la derivada de una foto visible del encargo', async () => {
+    const assetId = await addAsset(jobId, 'client')
+    const got = await getGalleryDerivative(db, jobId, assetId, 'thumb')
+    expect(got?.storageKey).toBe(`k/${assetId}/thumb.svg`)
+  })
+
+  it('no devuelve una variante que no existe', async () => {
+    const assetId = await addAsset(jobId, 'client')
+    expect(await getGalleryDerivative(db, jobId, assetId, 'web')).toBeUndefined()
+  })
+
+  it('no devuelve la foto de otro encargo aunque se acierte el id', async () => {
+    const assetId = await addAsset(otherJobId, 'client')
+    expect(await getGalleryDerivative(db, jobId, assetId, 'thumb')).toBeUndefined()
+  })
+
+  it('no devuelve una foto privada', async () => {
+    const assetId = await addAsset(jobId, 'private')
+    expect(await getGalleryDerivative(db, jobId, assetId, 'thumb')).toBeUndefined()
+  })
+
+  it('lista solo las fotos visibles del encargo', async () => {
+    await addAsset(jobId, 'client')
+    await addAsset(jobId, 'public')
+    await addAsset(jobId, 'private')
+    await addAsset(otherJobId, 'client')
+    const list = await listGalleryAssets(db, jobId)
+    expect(list).toHaveLength(2)
   })
 })

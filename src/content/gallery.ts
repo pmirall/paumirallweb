@@ -23,4 +23,9 @@ export const galleryView = {
     'Las fotos llevan marca de agua hasta que la factura esté pagada. La descarga en alta resolución se activa entonces.',
   empty: 'Todavía no hay fotos en esta galería.',
   photoAlt: 'Foto de la galería',
+  openPhoto: 'Ver foto',
+  viewerLabel: 'Visor de fotos',
+  close: 'Cerrar',
+  previous: 'Foto anterior',
+  next: 'Foto siguiente',
 } as const
