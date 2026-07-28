@@ -1,5 +1,5 @@
 import { mkdir, readFile, writeFile, access } from 'node:fs/promises'
-import { dirname, join } from 'node:path'
+import { dirname, resolve, sep } from 'node:path'
 import type { StorageAdapter, StoredObject } from './types'
 
 /**
@@ -10,12 +10,20 @@ import type { StorageAdapter, StoredObject } from './types'
  * y se convierte en rutas de carpeta.
  */
 export class DiskStorageAdapter implements StorageAdapter {
-  constructor(private readonly baseDir: string) {}
+  private readonly root: string
+  constructor(baseDir: string) {
+    this.root = resolve(baseDir)
+  }
 
   private pathFor(key: string): string {
-    // La clave no puede escapar del directorio base.
-    const safe = key.replace(/\.\./g, '').replace(/^\/+/, '')
-    return join(this.baseDir, safe)
+    // Se canonicaliza y se comprueba que queda dentro del directorio base, en vez
+    // de borrar `..` a mano. Así falla cerrado si algún día llega una clave con
+    // datos del cliente: una ruta que se sale no se sirve, se rechaza.
+    const full = resolve(this.root, key.replace(/^\/+/, ''))
+    if (full !== this.root && !full.startsWith(this.root + sep)) {
+      throw new Error('Clave de almacén fuera del directorio base')
+    }
+    return full
   }
 
   async put(key: string, bytes: Uint8Array, contentType: string): Promise<void> {
@@ -26,8 +34,8 @@ export class DiskStorageAdapter implements StorageAdapter {
   }
 
   async get(key: string): Promise<StoredObject | null> {
-    const file = this.pathFor(key)
     try {
+      const file = this.pathFor(key)
       const bytes = await readFile(file)
       let contentType = 'application/octet-stream'
       try {

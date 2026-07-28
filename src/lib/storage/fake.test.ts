@@ -32,9 +32,11 @@ describe('almacén sobre disco', () => {
     expect(await store.get('derivatives/b/nada.svg')).toBeNull()
   })
 
-  it('una clave con ../ no escapa del directorio base', async () => {
-    await store.put('../fuera.svg', new Uint8Array([7]), 'image/svg+xml')
-    // La normalización quita el ../, así que se guarda dentro, no fuera.
-    expect(await store.has('fuera.svg')).toBe(true)
+  it('una clave que se sale del directorio base se rechaza', async () => {
+    // Falla cerrado: no se escribe fuera, se lanza. Y las lecturas con una clave
+    // así devuelven "no existe", no un fichero ajeno.
+    await expect(store.put('../fuera.svg', new Uint8Array([7]), 'image/svg+xml')).rejects.toThrow()
+    expect(await store.has('../fuera.svg')).toBe(false)
+    expect(await store.get('../../etc/passwd')).toBeNull()
   })
 })
