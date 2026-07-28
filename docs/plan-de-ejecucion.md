@@ -180,6 +180,21 @@ Cambiar de pestaña conserva lo escrito en un formulario sin guardar.
 La fase que convierte ocho años de carpetas en datos. Es la que más valor
 desbloquea y la que más trabajo manual va a exigir aunque salga perfecta.
 
+### Estado de la fase 2
+
+Empezada, contra el adaptador falso como prescribe la propia fase. Hecho y en
+verde: el adaptador de Drive en solo lectura con su interfaz y su versión falsa,
+sembrada con las tres formas del Drive real; el intérprete de nombres de carpeta,
+tolerante a días de tres cifras, meses trece y comas por puntos, que marca dudoso
+lo que no puede fechar en vez de inventarlo; las cinco tablas de la fase con su
+migración; y el recorrido del árbol de hasta tres niveles que deja cada carpeta
+en la cola con su sugerencia de cliente y fecha, usa el año de la carpeta
+contenedora como contexto, no cuenta los `.psd` y no reinserta lo ya visto.
+
+Falta: la pantalla de la cola de enriquecimiento, la generación de derivadas, el
+cruce con Google Calendar y la sincronización real, que necesita credenciales de
+Google. El adaptador falso permite construir y probar todo lo demás.
+
 ### Qué se hace
 
 Adaptador de Google Drive en solo lectura, con cuenta de servicio, y su versión
