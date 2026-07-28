@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX "gallery_favorites_active_unique" ON "gallery_favorites" USING btree ("gallery_id","media_asset_id") WHERE "gallery_favorites"."submitted_at" is null;

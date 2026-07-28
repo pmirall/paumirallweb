@@ -57,7 +57,9 @@ export async function toggleFavorite(
     await db.delete(galleryFavorites).where(eq(galleryFavorites.id, existing[0].id))
     return { marked: false }
   }
-  await db.insert(galleryFavorites).values({ galleryId, mediaAssetId: assetId })
+  // onConflictDoNothing por si dos peticiones a la vez leen "no marcada" y ambas
+  // insertan: el índice parcial deja pasar solo una y la otra no rompe.
+  await db.insert(galleryFavorites).values({ galleryId, mediaAssetId: assetId }).onConflictDoNothing()
   return { marked: true }
 }
 

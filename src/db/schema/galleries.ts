@@ -1,4 +1,14 @@
-import { boolean, integer, pgEnum, pgTable, text, timestamp, uuid } from 'drizzle-orm/pg-core'
+import {
+  boolean,
+  integer,
+  pgEnum,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+} from 'drizzle-orm/pg-core'
+import { sql } from 'drizzle-orm'
 import { jobs } from './jobs'
 import { mediaAssets } from './drive'
 
@@ -53,15 +63,26 @@ export const galleryPinAttempts = pgTable('gallery_pin_attempts', {
 })
 
 /** Lo que el cliente marca. Mientras submitted_at es nulo, sigue eligiendo. */
-export const galleryFavorites = pgTable('gallery_favorites', {
-  id: uuid('id').primaryKey().defaultRandom(),
-  galleryId: uuid('gallery_id')
-    .notNull()
-    .references(() => galleries.id, { onDelete: 'cascade' }),
-  mediaAssetId: uuid('media_asset_id')
-    .notNull()
-    .references(() => mediaAssets.id, { onDelete: 'cascade' }),
-  markedAt: timestamp('marked_at', { withTimezone: true }).notNull().defaultNow(),
-  submittedAt: timestamp('submitted_at', { withTimezone: true }),
-  clientNote: text('client_note'),
-})
+export const galleryFavorites = pgTable(
+  'gallery_favorites',
+  {
+    id: uuid('id').primaryKey().defaultRandom(),
+    galleryId: uuid('gallery_id')
+      .notNull()
+      .references(() => galleries.id, { onDelete: 'cascade' }),
+    mediaAssetId: uuid('media_asset_id')
+      .notNull()
+      .references(() => mediaAssets.id, { onDelete: 'cascade' }),
+    markedAt: timestamp('marked_at', { withTimezone: true }).notNull().defaultNow(),
+    submittedAt: timestamp('submitted_at', { withTimezone: true }),
+    clientNote: text('client_note'),
+  },
+  (table) => [
+    // Una foto no puede estar marcada dos veces en la misma ronda sin enviar. El
+    // índice es parcial: al enviar (submitted_at deja de ser nulo) la fila sale
+    // del índice, así que una ronda nueva puede volver a marcar la misma foto.
+    uniqueIndex('gallery_favorites_active_unique')
+      .on(table.galleryId, table.mediaAssetId)
+      .where(sql`${table.submittedAt} is null`),
+  ],
+)
