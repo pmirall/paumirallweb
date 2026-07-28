@@ -451,6 +451,32 @@ Todo el recorrido funciona en un iPhone y en un Android reales.
 
 La fase que responde a la pregunta de cuánto se gana de verdad.
 
+### Estado de la fase 5
+
+Empezada, y avanzada contra los adaptadores falsos. Hecho y en verde: las cinco
+tablas de dinero (`quotes`, `quote_lines`, `invoices`, `payments`, `expenses`);
+el adaptador de facturación con su implementación falsa; el cálculo de euros por
+hora por encargo y por servicio, con gastos incluidos; el alta rápida de gastos
+con rastro en `audit_log`; la pantalla de finanzas que cruza importe, gastos y
+horas.
+
+El presupuesto funciona de punta a punta: editor con líneas e IVA, número
+correlativo, enlace público que se abre sin cuenta, y aceptación que pasa el
+encargo a confirmado. La factura se emite a través del proveedor (falso por
+ahora), guarda su reflejo con PDF y URL de verificación, y activar la emisión
+enciende la marca de agua de la galería. El cobro es manual (efectivo,
+transferencia o TPV externo): al cubrir el total, la factura queda pagada y la
+marca de agua se apaga sola. El cliente ve su factura en `/c/:token/factura` con
+el importe, el estado y cómo pagar.
+
+Stripe queda preparado pero inactivo, según el ADR 0013: el webhook existe y
+verifica la firma, pero sin claves responde 503 y el cobro va a mano.
+
+Falta: los presupuestos y facturas en la zona de finanzas como listas propias,
+los recordatorios de cobro por antigüedad, la rectificativa enlazada desde el
+admin, y encender Stripe cuando llegue el momento. El envío del presupuesto y de
+la factura por correo espera a Resend.
+
 ### Qué se hace
 
 Elegir proveedor de facturación y escribir el ADR. Hasta entonces, todo se

@@ -32,3 +32,4 @@ sigue vigente.
 | [0010](0010-analitica-sin-cookies.md) | Analítica sin cookies y sin banner de consentimiento | aceptada |
 | [0011](0011-sistema-visual-editorial-impreso.md) | Sistema visual editorial, sin radios y sin modo oscuro | aceptada |
 | [0012](0012-la-cola-recorre-un-arbol-no-una-lista.md) | La cola de enriquecimiento recorre un árbol, no una lista | aceptada |
+| [0013](0013-cobro-manual-primero-stripe-latente.md) | El cobro arranca manual y Stripe queda latente | aceptada |
