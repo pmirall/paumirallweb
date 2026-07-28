@@ -137,6 +137,36 @@ test('anotar horas suma al total del encargo', async ({ page }, testInfo) => {
   await expect(page.locator('.pm-time-total strong')).not.toHaveText(before ?? '')
 })
 
+test('la pestaña de galería crea el enlace, muestra el PIN una vez y revoca', async ({
+  page,
+}, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'muta datos; un solo proyecto')
+
+  await page.goto('/admin/login')
+  await page.getByRole('button', { name: 'Entrar en modo desarrollo' }).click()
+  await page.waitForURL('**/admin')
+
+  // El encargo de trail no tiene galería sembrada, así que se puede crear.
+  await page.goto('/admin/encargos')
+  await page.getByText('Trail Serra de Tramuntana').click()
+  await page.waitForURL(/\/admin\/encargos\/.+/)
+  await page.getByRole('link', { name: 'Galería' }).click()
+
+  await expect(page.getByText('todavía no tiene galería')).toBeVisible()
+  await page.getByRole('button', { name: 'Crear galería' }).click()
+  await page.waitForLoadState('networkidle')
+
+  // El PIN se muestra una vez, con cuatro dígitos, y aparece el enlace del cliente.
+  await expect(page.locator('.pm-freshpin__pin')).toHaveText(/^\d{4}$/)
+  await expect(page.locator('.pm-gallerypanel__link code')).toContainText('/c/')
+
+  // Revocar corta el acceso al instante.
+  page.on('dialog', (dialog) => dialog.accept())
+  await page.getByRole('button', { name: 'Revocar acceso' }).click()
+  await page.waitForLoadState('networkidle')
+  await expect(page.getByText(/Revocada/)).toBeVisible()
+})
+
 test('la cola de enriquecimiento sincroniza y convierte una carpeta en encargo', async ({
   page,
 }, testInfo) => {

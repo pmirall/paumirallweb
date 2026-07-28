@@ -9,8 +9,19 @@ import {
   updateJobNotes,
 } from '@/db/queries/job-mutations'
 import { addTimeEntry } from '@/db/queries/time-entries'
+import {
+  createGalleryForJob,
+  getGalleryForJob,
+  revokeGallery,
+  setGalleryPin,
+} from '@/db/queries/admin-gallery'
+import { generatePin, generateToken } from '@/lib/gallery/token'
+import { hashPin } from '@/lib/gallery/pin'
 import { ADMIN_COOKIE, verifySession } from '@/lib/auth/admin'
 import { JOB_STATUSES, TIME_ENTRY_KINDS, type JobStatus, type TimeEntryKind } from '@/db/schema'
+
+/** Caducidad por defecto: noventa días desde la entrega. Ver docs/plan. */
+const GALLERY_DAYS = 90
 
 async function requireEmail(): Promise<string> {
   const store = await cookies()
@@ -42,6 +53,53 @@ export async function saveNotesAction(jobId: string, formData: FormData) {
   await requireEmail()
   await updateJobNotes(await db(), jobId, String(formData.get('notes') ?? ''))
   revalidatePath(`/admin/encargos/${jobId}`)
+}
+
+export type GalleryActionResult =
+  | { ok: true; pin?: string }
+  | { ok: false; error: 'exists' | 'none' }
+
+/**
+ * Crea la galería del encargo: token de 128 bits, PIN de cuatro dígitos y
+ * caducidad a noventa días. El PIN se devuelve una sola vez, en claro, para que
+ * el admin lo envíe; luego solo queda el hash y no se puede recuperar.
+ */
+export async function createGalleryAction(jobId: string): Promise<GalleryActionResult> {
+  await requireEmail()
+  const database = await db()
+  if (await getGalleryForJob(database, jobId)) return { ok: false, error: 'exists' }
+  const pin = generatePin()
+  await createGalleryForJob(database, {
+    jobId,
+    token: generateToken(),
+    pinHash: await hashPin(pin),
+    expiresAt: new Date(Date.now() + GALLERY_DAYS * 24 * 60 * 60 * 1000),
+  })
+  revalidatePath(`/admin/encargos/${jobId}`)
+  return { ok: true, pin }
+}
+
+/** Genera un PIN nuevo y lo devuelve una vez. El anterior deja de valer. */
+export async function regeneratePinAction(jobId: string): Promise<GalleryActionResult> {
+  await requireEmail()
+  const database = await db()
+  const gallery = await getGalleryForJob(database, jobId)
+  if (!gallery) return { ok: false, error: 'none' }
+  const pin = generatePin()
+  await setGalleryPin(database, gallery.id, await hashPin(pin))
+  revalidatePath(`/admin/encargos/${jobId}`)
+  return { ok: true, pin }
+}
+
+/** Revoca la galería: el acceso se corta al instante. */
+export async function revokeGalleryAction(jobId: string): Promise<GalleryActionResult> {
+  await requireEmail()
+  const database = await db()
+  const gallery = await getGalleryForJob(database, jobId)
+  if (!gallery) return { ok: false, error: 'none' }
+  await revokeGallery(database, gallery.id)
+  revalidatePath(`/admin/encargos/${jobId}`)
+  return { ok: true }
 }
 
 export async function addTimeAction(jobId: string, formData: FormData) {

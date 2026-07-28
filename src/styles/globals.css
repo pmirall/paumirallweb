@@ -1313,6 +1313,42 @@ body {
     color: var(--text-muted); border-bottom: var(--border-w) solid transparent; padding: 0;
   }
   .pm-queue__link:hover { color: var(--pm-ink); border-bottom-color: currentColor; }
+
+  /* --- panel de galería en la ficha de encargo --- */
+  .pm-gallerypanel { display: flex; flex-direction: column; gap: var(--sp-4); max-width: var(--maxw-prose); }
+  .pm-notice--warn {
+    border-left-color: var(--state-error);
+    background: var(--state-error-surface);
+  }
+  .pm-keyvals { display: flex; flex-direction: column; gap: var(--sp-3); margin: 0; }
+  .pm-keyvals dt {
+    font-family: var(--font-ui); font-weight: var(--fw-bold); font-stretch: 88%;
+    font-size: var(--fs-caption); letter-spacing: var(--tracking-label); text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: 2px;
+  }
+  .pm-keyvals dd { margin: 0; font: var(--type-body); }
+  .pm-gallerypanel__link { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
+  .pm-gallerypanel__link code {
+    font-family: var(--font-mono); font-size: var(--fs-body-s);
+    background: var(--surface-page); padding: var(--sp-2) var(--sp-3); word-break: break-all;
+  }
+  .pm-gallerypanel__actions { display: flex; flex-wrap: wrap; gap: var(--sp-3); }
+  .pm-gallerypanel__favs { margin-top: var(--sp-2); }
+  .pm-gallerypanel__favstitle {
+    font-family: var(--font-ui); font-weight: var(--fw-bold); font-stretch: 88%;
+    font-size: var(--fs-caption); letter-spacing: var(--tracking-label); text-transform: uppercase;
+    color: var(--text-muted); margin: 0 0 var(--sp-3);
+  }
+  .pm-freshpin {
+    display: flex; flex-direction: column; gap: var(--sp-2);
+    padding: var(--sp-4); background: var(--surface-accent-soft);
+    clip-path: var(--clip-chevron);
+  }
+  .pm-freshpin__pin {
+    font-family: var(--font-mono); font-size: var(--fs-display-s);
+    letter-spacing: 0.3em; color: var(--pm-emerald-deep); font-weight: var(--fw-bold);
+  }
+  .pm-freshpin__note { font-size: var(--fs-body-s); color: var(--pm-emerald-deep); }
 }
 
 

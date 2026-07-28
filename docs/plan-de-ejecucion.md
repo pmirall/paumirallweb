@@ -360,6 +360,15 @@ no cambian cuando lleguen las fotos de verdad. La selección de favoritas funcio
 de punta a punta: marcar es optimista, el envío sella la selección y deja un aviso
 en la cola del admin.
 
+Una galería caducada no solo lo dice en la puerta: la caducidad se comprueba en
+cada petición, así que una sesión abierta deja de servir fotos al vencer, y la
+sesión que se emite nunca vive más que la galería.
+
+Desde el admin, la pestaña de galería de la ficha de encargo crea la entrega
+(token, PIN y caducidad a noventa días), muestra el PIN una sola vez para
+enviarlo, da el enlace del cliente, permite generar un PIN nuevo, revoca el acceso
+al instante y lista la selección que el cliente ya ha enviado.
+
 Falta: la descarga individual y el ZIP en alta, atar la marca de agua al estado de
 la factura (hoy es un campo de la galería), y las pantallas de vídeo, encargo y
 factura. La descarga en alta y la derivación real de las fotos dependen de la

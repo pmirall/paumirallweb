@@ -4,7 +4,11 @@ import { db } from '@/db/client'
 import { getJobDetail } from '@/db/queries/job-mutations'
 import { listTimeEntries, totalMinutesByJob } from '@/db/queries/time-entries'
 import { hasPendingDeliverables } from '@/db/queries/jobs'
+import { getGalleryForJob, listSubmittedFavorites } from '@/db/queries/admin-gallery'
+import { isGalleryOpen } from '@/lib/gallery/status'
+import { env } from '@/lib/env'
 import { PageHeader } from '@/components/admin/PageHeader'
+import { GalleryPanel } from '@/components/admin/GalleryPanel'
 import { EmptyState, Tag, buttonClass } from '@/components/ui'
 import {
   jobCategoryLabels,
@@ -42,6 +46,11 @@ export default async function JobDetailPage({
   const pending = await hasPendingDeliverables(database, id)
   const timeEntries = await listTimeEntries(database, id)
   const totalMinutes = await totalMinutesByJob(database, id)
+
+  // La galería solo se consulta en su pestaña; el resto no la necesita.
+  const galleryRow = active === 'galeria' ? await getGalleryForJob(database, id) : undefined
+  const submitted =
+    active === 'galeria' && galleryRow ? await listSubmittedFavorites(database, galleryRow.id) : []
 
   return (
     <>
@@ -222,7 +231,26 @@ export default async function JobDetailPage({
         <EmptyState level={2} title={jobDetail.tabs.archivos} body={jobDetail.filesLaterr} />
       ) : null}
       {active === 'galeria' ? (
-        <EmptyState level={2} title={jobDetail.tabs.galeria} body={jobDetail.galleryLater} />
+        <GalleryPanel
+          jobId={id}
+          clientUrl={galleryRow ? `${env.SITE_URL}/c/${galleryRow.token}` : ''}
+          gallery={
+            galleryRow
+              ? {
+                  token: galleryRow.token,
+                  status: galleryRow.status,
+                  watermark: galleryRow.watermark,
+                  expiresAt: galleryRow.expiresAt.toISOString(),
+                  expired: !isGalleryOpen(galleryRow, new Date()),
+                }
+              : null
+          }
+          favorites={submitted.map((f) => ({
+            filename: f.filename,
+            submittedAt: f.submittedAt ? f.submittedAt.toISOString() : null,
+            clientNote: f.clientNote,
+          }))}
+        />
       ) : null}
       {active === 'dinero' ? (
         <EmptyState level={2} title={jobDetail.tabs.dinero} body={jobDetail.moneyLater} />
