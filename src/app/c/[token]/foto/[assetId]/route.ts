@@ -1,4 +1,5 @@
 import { cookies } from 'next/headers'
+import { z } from 'zod'
 import { db } from '@/db/client'
 import { findValidSession, getGalleryByToken, getGalleryDerivative } from '@/db/queries/gallery'
 import { GALLERY_COOKIE, readGallerySession } from '@/lib/gallery/session'
@@ -8,6 +9,7 @@ export const dynamic = 'force-dynamic'
 
 /** Solo tamaños que se muestran en pantalla. La descarga en alta va por otra ruta. */
 const DISPLAY_VARIANTS = new Set(['thumb', 'web'])
+const idSchema = z.string().uuid()
 
 function notFound(): Response {
   // Mismo 404 para foto ajena, sesión inválida o variante inexistente: la
@@ -28,6 +30,9 @@ export async function GET(
   const { token, assetId } = await params
   const requested = new URL(request.url).searchParams.get('v') ?? 'thumb'
   if (!DISPLAY_VARIANTS.has(requested)) return notFound()
+  // Un id con formato inválido no debe llegar a la consulta: la columna es uuid
+  // y Postgres respondería con un error, no con una foto. Mismo 404 para todo.
+  if (!idSchema.safeParse(assetId).success) return notFound()
 
   const database = await db()
   const gallery = await getGalleryByToken(database, token)
