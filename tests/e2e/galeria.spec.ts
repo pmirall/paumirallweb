@@ -59,3 +59,27 @@ test('una foto no se sirve sin sesión de la galería', async ({ page }) => {
   const r = await page.request.get(`/c/${TOKEN}/foto/00000000-0000-0000-0000-000000000000?v=thumb`)
   expect(r.status()).toBe(404)
 })
+
+test('marcar favoritas y enviar la selección', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'muta datos; un solo proyecto')
+
+  await page.goto(`/c/${TOKEN}`)
+  await page.fill('#pin', '4271')
+  await page.getByRole('button', { name: 'Entrar' }).click()
+  await page.waitForURL(new RegExp(`/c/${TOKEN}/galeria$`))
+
+  // Sin nada marcado, el botón de enviar está deshabilitado.
+  const send = page.getByRole('button', { name: 'Enviar selección' })
+  await expect(send).toBeDisabled()
+
+  // Marcar dos fotos sube el contador.
+  await page.getByRole('button', { name: 'Marcar como favorita' }).first().click()
+  await expect(page.getByText('1 foto elegida')).toBeVisible()
+  await page.getByRole('button', { name: 'Marcar como favorita' }).first().click()
+  await expect(page.getByText('2 fotos elegidas')).toBeVisible()
+
+  // Enviar sella la selección y confirma.
+  await expect(send).toBeEnabled()
+  await send.click()
+  await expect(page.getByText(/Recibido/)).toBeVisible()
+})

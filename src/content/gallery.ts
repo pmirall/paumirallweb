@@ -28,4 +28,15 @@ export const galleryView = {
   close: 'Cerrar',
   previous: 'Foto anterior',
   next: 'Foto siguiente',
+  markFavorite: 'Marcar como favorita',
+  unmarkFavorite: 'Quitar de favoritas',
+  selectionTitle: 'Tu selección',
+  selectionCount: (n: number) =>
+    n === 0 ? 'Aún no has elegido ninguna' : `${n} ${n === 1 ? 'foto elegida' : 'fotos elegidas'}`,
+  selectionHint: 'Marca las que quieres que edite y envíamelas cuando estén.',
+  selectionSend: 'Enviar selección',
+  selectionSending: 'Enviando…',
+  selectionDone: (n: number) =>
+    `Recibido. Me llegan ${n === 1 ? 'tu foto' : `tus ${n} fotos`} y me pongo con ellas.`,
+  selectionError: 'No se ha podido guardar. Vuelve a intentarlo en un momento.',
 } as const

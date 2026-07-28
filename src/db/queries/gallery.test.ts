@@ -1,7 +1,6 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createTestDatabase, type TestDatabase } from '../testing'
 import { clients, galleries, jobs, mediaAssets, mediaDerivatives } from '../schema'
-import { hashPin } from '@/lib/gallery/pin'
 import { generateToken } from '@/lib/gallery/token'
 import {
   getGalleryDerivative,
@@ -28,7 +27,8 @@ describe('límite de intentos de PIN', () => {
       .values({
         jobId: j!.id,
         token: generateToken(),
-        pinHash: await hashPin('1234'),
+        // El PIN no se verifica aquí; el hash real de Argon2id es caro a propósito.
+        pinHash: 'no-verificado-en-estas-pruebas',
         expiresAt: new Date('2026-08-01T00:00:00Z'),
       })
       .returning()

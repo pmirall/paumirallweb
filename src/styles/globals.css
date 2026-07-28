@@ -1357,7 +1357,50 @@ body {
     grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
     gap: var(--sp-3);
   }
-  .pm-photos__item { min-width: 0; }
+  .pm-photos__item { min-width: 0; position: relative; }
+  .pm-fav {
+    position: absolute;
+    top: var(--sp-2);
+    right: var(--sp-2);
+    z-index: 2;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 0;
+    cursor: pointer;
+    color: var(--pm-white);
+    background: rgba(15, 27, 24, 0.42);
+    clip-path: var(--clip-chevron-sm, var(--clip-chevron));
+    transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out);
+  }
+  .pm-fav:hover { background: rgba(15, 27, 24, 0.62); }
+  .pm-fav[data-marked='true'] { color: var(--pm-teal-light); }
+  .pm-fav:focus-visible { outline: var(--border-w) solid var(--pm-white); outline-offset: 2px; }
+
+  .pm-selection {
+    position: sticky;
+    bottom: var(--sp-3);
+    margin-top: var(--sp-5);
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--sp-3);
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--surface-card);
+    border: var(--border-w) solid var(--border-hairline);
+    clip-path: var(--clip-chevron);
+  }
+  .pm-selection__text { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .pm-selection__text strong {
+    font-family: var(--font-ui); font-weight: var(--fw-bold); font-stretch: 88%;
+    font-size: var(--fs-caption); letter-spacing: var(--tracking-label); text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .pm-selection__hint { font-size: var(--fs-caption); color: var(--text-faint); }
+  .pm-selection__error { font-size: var(--fs-caption); color: var(--state-error); }
   .pm-photos__tile {
     display: block;
     width: 100%;
@@ -1421,6 +1464,9 @@ body {
   }
   .pm-lightbox__btn:hover { background: rgba(255, 255, 255, 0.12); }
   .pm-lightbox__btn:focus-visible { outline: var(--border-w) solid var(--pm-teal); outline-offset: 2px; }
+  .pm-lightbox__btn { display: inline-flex; align-items: center; gap: var(--sp-2); }
+  .pm-lightbox__btn[data-marked='true'] { color: var(--pm-teal-light); border-color: var(--pm-teal); }
+  .pm-lightbox__actions { display: flex; gap: var(--sp-2); align-items: center; }
   .pm-lightbox__stage {
     grid-row: 2;
     grid-column: 2;

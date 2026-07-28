@@ -349,10 +349,21 @@ la cuenta). La puerta con sus cuatro estados funciona: entra, PIN erróneo con l
 intentos restantes, galería caducada con vía de contacto, y token inválido como
 404. La galería solo se abre con una sesión válida de esa misma galería.
 
-Falta: el visor a pantalla completa, la descarga individual y el ZIP, la marca de
-agua servida de verdad, la selección de favoritas, y las pantallas de vídeo,
-encargo y factura. La marca de agua y la descarga real dependen de las derivadas,
-que son de la fase 2.
+La entrega ya se ve: la rejilla sirve las fotos por una ruta que comprueba la
+sesión en cada petición, reserva el espacio por proporción y carga las miniaturas
+de forma diferida. El visor a pantalla completa es un diálogo modal con teclado,
+foco atrapado y contador. Con la marca activa solo se sirven las derivadas
+marcadas; la versión limpia se rechaza en el servidor aunque se pida por su
+nombre. Las derivadas son de momento imágenes de marcador sobre un almacén en
+disco, con la misma interfaz que tendrá Supabase Storage: el visor y la seguridad
+no cambian cuando lleguen las fotos de verdad. La selección de favoritas funciona
+de punta a punta: marcar es optimista, el envío sella la selección y deja un aviso
+en la cola del admin.
+
+Falta: la descarga individual y el ZIP en alta, atar la marca de agua al estado de
+la factura (hoy es un campo de la galería), y las pantallas de vídeo, encargo y
+factura. La descarga en alta y la derivación real de las fotos dependen de la
+fase 2.
 
 ### Qué se hace
 
