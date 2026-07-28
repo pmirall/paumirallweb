@@ -7,6 +7,7 @@ import { hasPendingDeliverables } from '@/db/queries/jobs'
 import { getGalleryForJob, listSubmittedFavorites } from '@/db/queries/admin-gallery'
 import { listExpensesByJob, sumExpensesByJob } from '@/db/queries/expenses'
 import { listQuotesByJob } from '@/db/queries/quotes'
+import { listInvoicesForJob, sumPayments } from '@/db/queries/invoices'
 import { isGalleryOpen } from '@/lib/gallery/status'
 import { computeProfitability } from '@/lib/finance/profitability'
 import { env } from '@/lib/env'
@@ -14,6 +15,7 @@ import { PageHeader } from '@/components/admin/PageHeader'
 import { GalleryPanel } from '@/components/admin/GalleryPanel'
 import { QuoteEditor } from '@/components/admin/QuoteEditor'
 import { QuotesList } from '@/components/admin/QuotesList'
+import { InvoicePanel, type InvoiceView } from '@/components/admin/InvoicePanel'
 import { EmptyState, Tag, buttonClass } from '@/components/ui'
 import {
   jobCategoryLabels,
@@ -58,10 +60,28 @@ export default async function JobDetailPage({
   const submitted =
     active === 'galeria' && galleryRow ? await listSubmittedFavorites(database, galleryRow.id) : []
 
-  // Los gastos y presupuestos solo en la pestaña de dinero.
+  // Los gastos, presupuestos y facturas solo en la pestaña de dinero.
   const expensesTotal = active === 'dinero' ? await sumExpensesByJob(database, id) : 0
   const expenseList = active === 'dinero' ? await listExpensesByJob(database, id) : []
   const quoteList = active === 'dinero' ? await listQuotesByJob(database, id) : []
+  const invoiceRows = active === 'dinero' ? await listInvoicesForJob(database, id) : []
+  const invoiceViews: InvoiceView[] = await Promise.all(
+    invoiceRows.map(async (inv) => ({
+      id: inv.id,
+      number: inv.number,
+      status: inv.status,
+      totalCents: inv.totalCents,
+      paidCents: await sumPayments(database, inv.id),
+      pdfUrl: inv.pdfUrl,
+      verificationUrl: inv.verificationUrl,
+      issuedAt: inv.issuedAt ? inv.issuedAt.toISOString() : null,
+      dueAt: inv.dueAt,
+    })),
+  )
+  // Se puede emitir si hay presupuesto o importe del encargo y no hay ya una
+  // factura viva sin anular.
+  const hasLiveInvoice = invoiceRows.some((i) => i.status !== 'void')
+  const canIssue = active === 'dinero' && !hasLiveInvoice && job.budgetCents != null
 
   return (
     <>
@@ -309,6 +329,11 @@ export default async function JobDetailPage({
                 <QuotesList jobId={id} quotes={quoteList} siteUrl={env.SITE_URL} />
                 <h3 className="pm-money__h3">{jobDetail.quotes.newTitle}</h3>
                 <QuoteEditor jobId={id} />
+              </section>
+
+              <section className="pm-money__invoices">
+                <h2 className="pm-money__h2">{jobDetail.invoices.title}</h2>
+                <InvoicePanel jobId={id} invoices={invoiceViews} canIssue={canIssue} />
               </section>
 
               <section className="pm-money__expenses">

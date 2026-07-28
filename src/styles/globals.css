@@ -1392,6 +1392,19 @@ body {
   .pm-quoteform__total { font-size: var(--fs-body-l); }
   .pm-quotes__actions { display: flex; gap: var(--sp-2); align-items: center; flex-wrap: wrap; }
 
+  /* --- facturas y cobros --- */
+  .pm-invoices { display: flex; flex-direction: column; gap: var(--sp-4); }
+  .pm-invoice { border: var(--border-w) solid var(--border-hairline); padding: var(--sp-3) var(--sp-4); }
+  .pm-invoice__head { display: flex; flex-wrap: wrap; gap: var(--sp-3); justify-content: space-between; align-items: baseline; }
+  .pm-invoice__number { font-family: var(--font-mono); font-weight: var(--fw-bold); }
+  .pm-invoice__meta { display: block; font-size: var(--fs-caption); color: var(--text-muted); }
+  .pm-invoice__links { display: flex; gap: var(--sp-3); }
+  .pm-invoice__balance { font-size: var(--fs-body-s); color: var(--text-muted); margin: var(--sp-2) 0; }
+  .pm-paymentform { display: flex; flex-wrap: wrap; gap: var(--sp-2); align-items: center; }
+  .pm-paymentform__amount { max-width: 8rem; }
+  .pm-paymentform__ref { min-width: 10rem; flex: 1 1 10rem; }
+  .pm-invoices__issue { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
+
   /* --- finanzas --- */
   .pm-finance__h2 {
     font-family: var(--font-serif); font-size: var(--fs-body-l); font-weight: var(--fw-bold);

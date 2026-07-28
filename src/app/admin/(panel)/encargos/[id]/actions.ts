@@ -21,13 +21,16 @@ import {
 import { generatePin, generateToken } from '@/lib/gallery/token'
 import { hashPin } from '@/lib/gallery/pin'
 import { addExpense } from '@/db/queries/expenses'
+import { issueInvoiceForJob, registerPayment } from '@/db/queries/invoices'
 import { ADMIN_COOKIE, verifySession } from '@/lib/auth/admin'
 import {
   EXPENSE_CATEGORIES,
   JOB_STATUSES,
+  PAYMENT_METHODS,
   TIME_ENTRY_KINDS,
   type ExpenseCategory,
   type JobStatus,
+  type PaymentMethod,
   type TimeEntryKind,
 } from '@/db/schema'
 
@@ -161,6 +164,38 @@ export async function createQuoteAction(jobId: string, formData: FormData) {
 export async function markQuoteSentAction(jobId: string, quoteId: string) {
   const email = await requireEmail()
   await markQuoteSent(await db(), quoteId, new Date(), email)
+  revalidatePath(`/admin/encargos/${jobId}`)
+}
+
+/** Emite la factura del encargo a través del proveedor y activa la marca de agua. */
+export async function issueInvoiceAction(jobId: string) {
+  const email = await requireEmail()
+  await issueInvoiceForJob(await db(), jobId, new Date().getFullYear(), new Date(), email)
+  revalidatePath(`/admin/encargos/${jobId}`)
+}
+
+/**
+ * Registra un cobro manual: efectivo, transferencia o TPV externo. Cuando cubre
+ * el total, la factura queda pagada y se apaga la marca de agua. Stripe entra por
+ * su webhook, no por aquí.
+ */
+export async function registerPaymentAction(jobId: string, invoiceId: string, formData: FormData) {
+  const email = await requireEmail()
+  const euros = Number(formData.get('amount'))
+  const methodRaw = String(formData.get('method') ?? '')
+  const method: PaymentMethod = (PAYMENT_METHODS as readonly string[]).includes(methodRaw)
+    ? (methodRaw as PaymentMethod)
+    : 'cash'
+  // Stripe no se registra a mano: llega por su webhook. Aquí solo cobros manuales.
+  if (method === 'stripe') return
+  if (!Number.isFinite(euros) || euros <= 0) return
+  const reference = String(formData.get('reference') ?? '').trim() || null
+  await registerPayment(
+    await db(),
+    { invoiceId, method, amountCents: Math.round(euros * 100), reference },
+    new Date(),
+    email,
+  )
   revalidatePath(`/admin/encargos/${jobId}`)
 }
 

@@ -137,6 +137,31 @@ test('anotar horas suma al total del encargo', async ({ page }, testInfo) => {
   await expect(page.locator('.pm-time-total strong')).not.toHaveText(before ?? '')
 })
 
+test('emitir factura y cobrarla a mano la deja pagada', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'muta datos; un solo proyecto')
+
+  await page.goto('/admin/login')
+  await page.getByRole('button', { name: 'Entrar en modo desarrollo' }).click()
+  await page.waitForURL('**/admin')
+
+  // La media maratón está en borrador, con presupuesto y sin galería: emitir y
+  // cobrar aquí no interfiere con otras pruebas.
+  await page.goto('/admin/encargos')
+  await page.getByText('Media maratón').click()
+  await page.waitForURL(/\/admin\/encargos\/.+/)
+  await page.getByRole('link', { name: 'Dinero' }).click()
+
+  await page.getByRole('button', { name: 'Emitir factura' }).click()
+  await page.waitForLoadState('networkidle')
+  const invoice = page.locator('.pm-invoice')
+  await expect(invoice).toContainText('Emitida')
+
+  // El importe a cobrar viene puesto por defecto; se registra el cobro entero.
+  await invoice.getByRole('button', { name: 'Registrar cobro' }).click()
+  await page.waitForLoadState('networkidle')
+  await expect(page.locator('.pm-invoice')).toContainText('Pagada')
+})
+
 test('finanzas cruza importe, gastos y horas por servicio y por encargo', async ({ page }) => {
   await page.goto('/admin/login')
   await page.getByRole('button', { name: 'Entrar en modo desarrollo' }).click()
