@@ -28,6 +28,13 @@ function b64url(buf: ArrayBuffer): string {
     .replace(/=+$/, '')
 }
 
+function fromB64url(text: string): Uint8Array<ArrayBuffer> {
+  const bin = atob(text.replace(/-/g, '+').replace(/_/g, '/'))
+  const out = new Uint8Array(bin.length)
+  for (let i = 0; i < bin.length; i += 1) out[i] = bin.charCodeAt(i)
+  return out
+}
+
 async function sign(payload: string): Promise<string> {
   const mac = await crypto.subtle.sign('HMAC', await key(), utf8(payload))
   return b64url(mac)
@@ -51,7 +58,14 @@ export async function readGallerySession(
   if (lastDot < 0) return null
   const payload = token.slice(0, lastDot)
   const signature = token.slice(lastDot + 1)
-  if ((await sign(payload)) !== signature) return null
+  // Comparación en tiempo constante, como la sesión del admin.
+  let valid: boolean
+  try {
+    valid = await crypto.subtle.verify('HMAC', await key(), fromB64url(signature), utf8(payload))
+  } catch {
+    return null
+  }
+  if (!valid) return null
 
   const parts = payload.split('.')
   if (parts.length !== 3) return null

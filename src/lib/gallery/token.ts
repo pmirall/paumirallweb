@@ -29,8 +29,19 @@ function encodeBase32(bytes: Uint8Array): string {
   return out
 }
 
-/** Un PIN de cuatro dígitos. Se genera al crear la galería. */
+/**
+ * Un PIN de cuatro dígitos. Se genera al crear la galería. Se usa muestreo por
+ * rechazo en vez de `n % 10000`: el resto sesgaría los PIN bajos, porque 2^32 no
+ * es múltiplo de 10000 y los primeros restos salen una vez más. Con solo diez
+ * mil combinaciones, cualquier sesgo estrecha el espacio y no es aceptable.
+ */
 export function generatePin(): string {
-  const n = crypto.getRandomValues(new Uint32Array(1))[0]!
+  // El mayor múltiplo de 10000 que cabe en un Uint32. Todo lo que quede por
+  // encima se descarta para que las diez mil combinaciones sean equiprobables.
+  const limit = Math.floor(0x1_0000_0000 / 10000) * 10000
+  let n = crypto.getRandomValues(new Uint32Array(1))[0]!
+  while (n >= limit) {
+    n = crypto.getRandomValues(new Uint32Array(1))[0]!
+  }
   return String(n % 10000).padStart(4, '0')
 }

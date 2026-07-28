@@ -32,4 +32,19 @@ describe('token de galería', () => {
   it('el PIN es de cuatro dígitos', () => {
     expect(generatePin()).toMatch(/^\d{4}$/)
   })
+
+  it('el PIN cubre todo el rango sin sesgo evidente', () => {
+    // Muestreo por rechazo: con muchas muestras deben salir PIN de cada decena
+    // de millar y no concentrarse en los bajos. No es una prueba estadística
+    // formal, pero detectaría un `% 10000` que ya no muestrease uniforme.
+    let low = 0
+    let high = 0
+    for (let i = 0; i < 2000; i += 1) {
+      const n = Number(generatePin())
+      if (n < 5000) low += 1
+      else high += 1
+    }
+    expect(low).toBeGreaterThan(800)
+    expect(high).toBeGreaterThan(800)
+  })
 })

@@ -18,16 +18,70 @@ export async function getGalleryByToken(db: Db, token: string) {
   return rows[0]
 }
 
+export const TOKEN_MAX_FAILS_EXPORT = TOKEN_MAX_FAILS
+
 export async function recordPinAttempt(
   db: Db,
   galleryId: string,
   ipHash: string | null,
   success: boolean,
   at?: Date,
-): Promise<void> {
-  await db
+): Promise<string> {
+  const [row] = await db
     .insert(galleryPinAttempts)
     .values({ galleryId, ipHash, success, ...(at ? { attemptedAt: at } : {}) })
+    .returning()
+  return row!.id
+}
+
+export async function markAttemptSuccess(db: Db, id: string): Promise<void> {
+  await db.update(galleryPinAttempts).set({ success: true }).where(eq(galleryPinAttempts.id, id))
+}
+
+/**
+ * Cuenta los fallos recientes de este token y de esta IP. Se llama DESPUÉS de
+ * insertar el intento, así que el recuento lo incluye: con esto, aunque lleguen
+ * muchas peticiones a la vez, todas ven un recuento alto y se bloquean, en vez
+ * de pasar todas la comprobación antes de que ninguna registre su fallo.
+ */
+export async function countRecentFails(
+  db: Db,
+  galleryId: string,
+  ipHash: string | null,
+  now: Date,
+): Promise<{ tokenFails: number; ipFails: number; tokenMax: number; ipMax: number }> {
+  const tokenSince = new Date(now.getTime() - TOKEN_WINDOW_MS)
+  const tokenRows = await db
+    .select({ success: galleryPinAttempts.success, attemptedAt: galleryPinAttempts.attemptedAt })
+    .from(galleryPinAttempts)
+    .where(
+      and(eq(galleryPinAttempts.galleryId, galleryId), gte(galleryPinAttempts.attemptedAt, tokenSince)),
+    )
+    .orderBy(desc(galleryPinAttempts.attemptedAt))
+  // Un acierto reciente limpia la cuenta.
+  let tokenFails = 0
+  for (const r of tokenRows) {
+    if (r.success) break
+    tokenFails += 1
+  }
+
+  let ipFails = 0
+  if (ipHash) {
+    const ipSince = new Date(now.getTime() - IP_WINDOW_MS)
+    const ipRows = await db
+      .select({ id: galleryPinAttempts.id })
+      .from(galleryPinAttempts)
+      .where(
+        and(
+          eq(galleryPinAttempts.ipHash, ipHash),
+          eq(galleryPinAttempts.success, false),
+          gte(galleryPinAttempts.attemptedAt, ipSince),
+        ),
+      )
+    ipFails = ipRows.length
+  }
+
+  return { tokenFails, ipFails, tokenMax: TOKEN_MAX_FAILS, ipMax: IP_MAX_FAILS }
 }
 
 /**

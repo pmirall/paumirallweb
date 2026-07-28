@@ -10,7 +10,12 @@ describe('sesión de administración', () => {
 
   it('rechaza una firma manipulada', async () => {
     const token = await issueSession('pau@example.com')
-    const tampered = `${token.slice(0, -2)}xy`
+    // Se altera el primer carácter de la firma, que siempre codifica bits
+    // significativos; tocar el último base64url puede caer en bits de relleno
+    // y no cambiar la firma decodificada.
+    const lastDot = token.lastIndexOf('.')
+    const first = token[lastDot + 1] === 'A' ? 'B' : 'A'
+    const tampered = token.slice(0, lastDot + 1) + first + token.slice(lastDot + 2)
     expect(await verifySession(tampered)).toBeNull()
   })
 

@@ -69,6 +69,11 @@ if (isVercelDeploy) {
   if (!env.SESSION_SECRET || env.SESSION_SECRET.length < 32) {
     throw new Error('Falta SESSION_SECRET de al menos 32 caracteres en el despliegue.')
   }
+  // Sin sal propia, el hash de IP usaría la constante de desarrollo y las IP
+  // guardadas serían reversibles por diccionario. Ver c/[token]/actions.ts.
+  if (!env.IP_HASH_SALT || env.IP_HASH_SALT.length < 16) {
+    throw new Error('Falta IP_HASH_SALT de al menos 16 caracteres en el despliegue.')
+  }
 }
 
 export const adminAllowedEmails = (env.ADMIN_ALLOWED_EMAILS ?? '')
