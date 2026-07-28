@@ -33,6 +33,14 @@ const schema = z.object({
   // Carpeta del almacén de derivadas en desarrollo y pruebas. En producción el
   // almacén es Supabase Storage y esto no se usa.
   STORAGE_DIR: z.string().min(1).optional(),
+  // Facturación. Mientras sea 'fake' o esté vacío, se usa el adaptador de pruebas.
+  BILLING_PROVIDER: z.string().optional(),
+  BILLING_API_KEY: z.string().optional(),
+  BILLING_API_URL: z.string().optional(),
+  // Stripe queda preparado pero inactivo hasta que haya claves. Sin ellas, el
+  // cobro es en efectivo, transferencia o TPV externo, registrado a mano.
+  STRIPE_SECRET_KEY: z.string().optional(),
+  STRIPE_WEBHOOK_SECRET: z.string().optional(),
 })
 
 const parsed = schema.safeParse(process.env)

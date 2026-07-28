@@ -25,6 +25,9 @@ export default ts.config(
     },
     rules: {
       // Las reglas del repositorio. Ver docs/convenciones.md.
+      // Un argumento que empieza por _ está sin usar a propósito: métodos que
+      // cumplen un contrato pero no necesitan todos sus parámetros.
+      '@typescript-eslint/no-unused-vars': ['error', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/consistent-type-imports': 'warn',
       'no-console': ['error', { allow: ['warn', 'error'] }],
