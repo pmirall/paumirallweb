@@ -1314,3 +1314,38 @@ body {
   }
   .pm-queue__link:hover { color: var(--pm-ink); border-bottom-color: currentColor; }
 }
+
+
+/* ===========================================================================
+ * ZONA DE CLIENTE
+ * =========================================================================== */
+@layer components {
+  .pm-client { min-height: 100svh; background: var(--surface-page); display: flex; flex-direction: column; }
+  .pm-client__head { padding: var(--sp-5) var(--page-pad); border-bottom: var(--border-w) solid var(--border-hairline); }
+  .pm-client__mark { line-height: 0; display: inline-block; }
+  .pm-client__mark img { width: 150px; height: auto; }
+  .pm-client__main { flex: 1; padding: var(--sp-8) var(--page-pad); width: 100%; max-width: var(--maxw-page); margin-inline: auto; }
+
+  /* --- puerta --- */
+  .pm-gate { max-width: 34rem; margin: var(--sp-8) auto; }
+  .pm-gate__title {
+    font-family: var(--font-display); font-style: italic; font-weight: var(--fw-black);
+    font-stretch: 88%; font-size: var(--fs-display-m); line-height: var(--lh-heading);
+    letter-spacing: var(--tracking-display); margin: var(--sp-2) 0 var(--sp-5);
+  }
+  .pm-gate__body { font: var(--type-lead); color: var(--pm-graphite); margin: 0 0 var(--sp-5); }
+  .pm-gate__form { display: flex; flex-direction: column; gap: var(--sp-3); }
+  .pm-gate__pin {
+    font-size: var(--fs-display-s); letter-spacing: 0.5em; text-align: center;
+    max-width: 12rem; font-family: var(--font-mono);
+  }
+  .pm-gate__form .pm-btn { align-self: flex-start; margin-top: var(--sp-2); }
+
+  /* --- rejilla de la galería --- */
+  .pm-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: var(--sp-4);
+    margin-top: var(--sp-5);
+  }
+}

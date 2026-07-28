@@ -339,6 +339,21 @@ forma visible.
 El producto visto desde fuera. La fase con más lógica de permisos por petición y
 la que más hay que probar en móviles reales.
 
+### Estado de la fase 4
+
+Empezada. Hecho y en verde: las tablas de galería, el token de 128 bits en base32
+sin caracteres ambiguos, el PIN con Argon2id y sal por galería, la cookie de
+sesión firmada y atada a una galería concreta, y el límite de intentos en la base
+(cinco por token en quince minutos, veinte por IP en una hora, un acierto limpia
+la cuenta). La puerta con sus cuatro estados funciona: entra, PIN erróneo con los
+intentos restantes, galería caducada con vía de contacto, y token inválido como
+404. La galería solo se abre con una sesión válida de esa misma galería.
+
+Falta: el visor a pantalla completa, la descarga individual y el ZIP, la marca de
+agua servida de verdad, la selección de favoritas, y las pantallas de vídeo,
+encargo y factura. La marca de agua y la descarga real dependen de las derivadas,
+que son de la fase 2.
+
 ### Qué se hace
 
 Tablas `galleries`, `gallery_sessions`, `gallery_pin_attempts` y

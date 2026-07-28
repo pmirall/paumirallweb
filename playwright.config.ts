@@ -40,6 +40,7 @@ export default defineConfig({
       ADMIN_ALLOWED_EMAILS: 'pau@example.com',
       SESSION_SECRET: 'secreto-de-prueba-e2e',
       ADMIN_DEV_BYPASS: '1',
+      IP_HASH_SALT: 'sal-de-prueba',
     },
     reuseExistingServer: !process.env.CI,
     timeout: 180_000,

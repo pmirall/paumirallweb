@@ -1,4 +1,6 @@
 import { createDatabase } from './client'
+import { galleries } from './schema'
+import { hashPin } from '@/lib/gallery/pin'
 import { clients, deliverables, jobPublications, jobs, leads, timeEntries } from './schema'
 
 /**
@@ -115,6 +117,15 @@ export async function seed(db: Awaited<ReturnType<typeof createDatabase>>) {
     { jobId: trail.id, date: '2025-10-05', minutes: 300, kind: 'shoot' },
     { jobId: trail.id, date: '2025-10-05', minutes: 90, kind: 'travel' },
   ])
+
+  // Una galería activa para el encargo entregado, con PIN 4271 y token fijo en
+  // desarrollo. En producción el token es aleatorio y el PIN se envía por correo.
+  await db.insert(galleries).values({
+    jobId: retrato.id,
+    token: 'DEV0GALERIA0JULIA',
+    pinHash: await hashPin('4271'),
+    expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+  })
 
   await db.insert(leads).values([
     {

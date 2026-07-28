@@ -28,6 +28,8 @@ const schema = z.object({
   SESSION_SECRET: z.string().min(1).optional(),
   // Acceso de desarrollo al admin. Solo surte efecto fuera de Vercel.
   ADMIN_DEV_BYPASS: z.enum(['0', '1']).optional(),
+  GALLERY_SESSION_SECRET: z.string().min(1).optional(),
+  IP_HASH_SALT: z.string().min(1).optional(),
 })
 
 const parsed = schema.safeParse(process.env)

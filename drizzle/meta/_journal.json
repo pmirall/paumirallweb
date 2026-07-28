@@ -15,6 +15,13 @@
       "when": 1785227052783,
       "tag": "0001_ordinary_william_stryker",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1785232167398,
+      "tag": "0002_volatile_the_watchers",
+      "breakpoints": true
     }
   ]
 }
