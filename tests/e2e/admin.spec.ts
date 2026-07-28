@@ -137,6 +137,21 @@ test('anotar horas suma al total del encargo', async ({ page }, testInfo) => {
   await expect(page.locator('.pm-time-total strong')).not.toHaveText(before ?? '')
 })
 
+test('finanzas cruza importe, gastos y horas por servicio y por encargo', async ({ page }) => {
+  await page.goto('/admin/login')
+  await page.getByRole('button', { name: 'Entrar en modo desarrollo' }).click()
+  await page.waitForURL('**/admin')
+
+  await page.getByRole('link', { name: 'Finanzas' }).click()
+  await page.waitForURL('**/admin/finanzas')
+  await expect(page.getByRole('heading', { level: 1, name: 'Finanzas' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 2, name: 'Por servicio' })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 2, name: 'Por encargo' })).toBeVisible()
+  // Con datos sembrados sale al menos un euros por hora en euros.
+  await expect(page.getByText('Euros por hora').first()).toBeVisible()
+  await expect(page.locator('.pm-table').first()).toContainText('€')
+})
+
 test('la pestaña de dinero da el euros por hora del encargo', async ({ page }) => {
   await page.goto('/admin/login')
   await page.getByRole('button', { name: 'Entrar en modo desarrollo' }).click()

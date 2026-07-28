@@ -12,6 +12,7 @@ export const adminNav = [
   { label: 'Encargos', href: '/admin/encargos' },
   { label: 'Clientes', href: '/admin/clientes' },
   { label: 'Consultas', href: '/admin/leads' },
+  { label: 'Finanzas', href: '/admin/finanzas' },
   { label: 'Drive', href: '/admin/drive' },
 ] as const
 
@@ -56,6 +57,30 @@ export const jobCategoryLabels: Record<string, string> = {
   sport: 'Deporte',
   video: 'Vídeo',
 }
+
+export const finance = {
+  title: 'Finanzas',
+  subtitle: 'Cuánto se gana de verdad, encargo a encargo.',
+  billingLater:
+    'Presupuestos, facturas y cobros llegan cuando se conecte el proveedor de facturación. Por ahora, el importe es el presupuesto anotado en cada encargo.',
+  byServiceTitle: 'Por servicio',
+  byJobTitle: 'Por encargo',
+  colService: 'Servicio',
+  colJob: 'Encargo',
+  colBudget: 'Importe',
+  colExpenses: 'Gastos',
+  colNet: 'Neto',
+  colHours: 'Horas',
+  colRate: 'Euros por hora',
+  colJobs: 'Encargos',
+  noRate: 'Faltan horas',
+  empty: 'Todavía no hay nada que calcular.',
+  missingHours: (n: number) =>
+    n === 0
+      ? ''
+      : `${n} ${n === 1 ? 'encargo tiene' : 'encargos tienen'} importe pero aún sin horas. Anótalas para que cuente.`,
+  generalExpenses: 'Gastos generales, sin encargo',
+} as const
 
 export const leadStatusLabels: Record<string, string> = {
   new: 'Nueva',

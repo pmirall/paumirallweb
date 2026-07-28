@@ -26,3 +26,33 @@ export function computeProfitability(
   }
   return { netCents, minutes, eurosPerHour }
 }
+
+export interface CategoryTotals {
+  category: string
+  budgetCents: number
+  expensesCents: number
+  minutes: number
+  jobs: number
+}
+
+/**
+ * Agrupa por servicio (categoría del encargo) sumando importe, gastos y horas.
+ * Solo cuenta el importe cuando existe: un encargo sin presupuesto no infla ni
+ * baja el total del servicio. Devuelve las categorías con algo que sumar.
+ */
+export function aggregateByCategory(
+  rows: Array<{ category: string; budgetCents: number | null; expensesCents: number; minutes: number }>,
+): CategoryTotals[] {
+  const byCat = new Map<string, CategoryTotals>()
+  for (const row of rows) {
+    const current =
+      byCat.get(row.category) ??
+      { category: row.category, budgetCents: 0, expensesCents: 0, minutes: 0, jobs: 0 }
+    current.budgetCents += row.budgetCents ?? 0
+    current.expensesCents += row.expensesCents
+    current.minutes += row.minutes
+    current.jobs += 1
+    byCat.set(row.category, current)
+  }
+  return [...byCat.values()]
+}
