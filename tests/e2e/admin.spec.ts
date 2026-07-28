@@ -150,6 +150,29 @@ test('la pestaña de dinero da el euros por hora del encargo', async ({ page }) 
   await expect(page.getByText('Euros por hora')).toBeVisible()
   // Con presupuesto y horas sembrados, sale un número en euros, no el aviso.
   await expect(page.locator('.pm-money__rate')).toContainText('€')
+  // Los gastos sembrados de este encargo se listan.
+  await expect(page.getByText('Gasolina y peajes')).toBeVisible()
+})
+
+test('anotar un gasto lo añade a la lista del encargo', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'muta datos; un solo proyecto')
+
+  await page.goto('/admin/login')
+  await page.getByRole('button', { name: 'Entrar en modo desarrollo' }).click()
+  await page.waitForURL('**/admin')
+
+  await page.goto('/admin/encargos')
+  await page.getByText('Trail Serra de Tramuntana').click()
+  await page.waitForURL(/\/admin\/encargos\/.+/)
+  await page.getByRole('link', { name: 'Dinero' }).click()
+
+  await page.getByLabel('Importe en euros').fill('24.5')
+  await page.getByLabel('Concepto').fill('Batería de repuesto')
+  await page.getByLabel('Día').fill('2025-10-05')
+  await page.getByRole('button', { name: 'Anotar gasto' }).click()
+  await page.waitForLoadState('networkidle')
+
+  await expect(page.getByText('Batería de repuesto')).toBeVisible()
 })
 
 test('la pestaña de galería crea el enlace, muestra el PIN una vez y revoca', async ({

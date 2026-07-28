@@ -5,6 +5,7 @@ import { getJobDetail } from '@/db/queries/job-mutations'
 import { listTimeEntries, totalMinutesByJob } from '@/db/queries/time-entries'
 import { hasPendingDeliverables } from '@/db/queries/jobs'
 import { getGalleryForJob, listSubmittedFavorites } from '@/db/queries/admin-gallery'
+import { listExpensesByJob, sumExpensesByJob } from '@/db/queries/expenses'
 import { isGalleryOpen } from '@/lib/gallery/status'
 import { computeProfitability } from '@/lib/finance/profitability'
 import { env } from '@/lib/env'
@@ -16,10 +17,11 @@ import {
   jobDetail,
   jobStatusLabels,
 } from '@/content/admin'
-import { JOB_STATUSES, TIME_ENTRY_KINDS } from '@/db/schema'
+import { EXPENSE_CATEGORIES, JOB_STATUSES, TIME_ENTRY_KINDS } from '@/db/schema'
 import { formatEuros } from '@/lib/format'
 import { formatDate, formatDuration } from '@/lib/dates'
 import {
+  addExpenseAction,
   addTimeAction,
   changeStatusAction,
   saveNotesAction,
@@ -52,6 +54,10 @@ export default async function JobDetailPage({
   const galleryRow = active === 'galeria' ? await getGalleryForJob(database, id) : undefined
   const submitted =
     active === 'galeria' && galleryRow ? await listSubmittedFavorites(database, galleryRow.id) : []
+
+  // Los gastos solo en la pestaña de dinero.
+  const expensesTotal = active === 'dinero' ? await sumExpensesByJob(database, id) : 0
+  const expenseList = active === 'dinero' ? await listExpensesByJob(database, id) : []
 
   return (
     <>
@@ -255,7 +261,7 @@ export default async function JobDetailPage({
       ) : null}
       {active === 'dinero' ? (
         (() => {
-          const money = computeProfitability(job.budgetCents, totalMinutes)
+          const money = computeProfitability(job.budgetCents, totalMinutes, expensesTotal)
           return (
             <div className="pm-money">
               <dl className="pm-money__grid">
@@ -264,6 +270,14 @@ export default async function JobDetailPage({
                   <dd>
                     {job.budgetCents != null ? formatEuros(job.budgetCents) : jobDetail.money.noBudget}
                   </dd>
+                </div>
+                <div>
+                  <dt>{jobDetail.money.expenses}</dt>
+                  <dd>{formatEuros(expensesTotal)}</dd>
+                </div>
+                <div>
+                  <dt>{jobDetail.money.net}</dt>
+                  <dd>{money.netCents != null ? formatEuros(money.netCents) : '—'}</dd>
                 </div>
                 <div>
                   <dt>{jobDetail.money.hours}</dt>
@@ -285,6 +299,73 @@ export default async function JobDetailPage({
               {money.eurosPerHour != null ? (
                 <p className="pm-field__hint">{jobDetail.money.perHourHint}</p>
               ) : null}
+
+              <section className="pm-money__expenses">
+                <h2 className="pm-money__h2">{jobDetail.money.expensesTitle}</h2>
+                <form action={addExpenseAction.bind(null, id)} className="pm-expenseform">
+                  <input
+                    className="pm-field__input pm-expenseform__amount"
+                    name="amount"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    inputMode="decimal"
+                    placeholder={jobDetail.money.expenseAmount}
+                    aria-label={jobDetail.money.expenseAmount}
+                    required
+                  />
+                  <input
+                    className="pm-field__input pm-expenseform__desc"
+                    name="description"
+                    placeholder={jobDetail.money.expenseDescription}
+                    aria-label={jobDetail.money.expenseDescription}
+                    required
+                  />
+                  <select
+                    className="pm-field__input"
+                    name="category"
+                    aria-label={jobDetail.money.expenseCategory}
+                    defaultValue="other"
+                  >
+                    {EXPENSE_CATEGORIES.map((c) => (
+                      <option key={c} value={c}>
+                        {jobDetail.money.expenseCats[c]}
+                      </option>
+                    ))}
+                  </select>
+                  <input
+                    className="pm-field__input"
+                    name="spentOn"
+                    type="date"
+                    aria-label={jobDetail.money.expenseDate}
+                    required
+                  />
+                  <button className={buttonClass('primary', true)} type="submit">
+                    {jobDetail.money.expenseAdd}
+                  </button>
+                </form>
+
+                {expenseList.length === 0 ? (
+                  <p className="pm-field__hint">{jobDetail.money.expensesEmpty}</p>
+                ) : (
+                  <ul className="pm-list">
+                    {expenseList.map((e) => (
+                      <li key={e.id} className="pm-list__item">
+                        <div>
+                          <span className="pm-list__title">{e.description}</span>
+                          <span className="pm-list__meta">
+                            {jobDetail.money.expenseCats[e.category]}
+                          </span>
+                        </div>
+                        <span className="pm-list__date">
+                          {formatEuros(e.amountCents)} · {formatDate(e.spentOn)}
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </section>
+
               <p className="pm-notice" role="note">
                 {jobDetail.money.invoiceLater}
               </p>

@@ -1,7 +1,7 @@
 import { createDatabase } from './client'
 import { galleries, mediaAssets, mediaDerivatives } from './schema'
 import { hashPin } from '@/lib/gallery/pin'
-import { clients, deliverables, jobPublications, jobs, leads, timeEntries } from './schema'
+import { clients, deliverables, expenses, jobPublications, jobs, leads, timeEntries } from './schema'
 import { deriveAsset } from '@/lib/media/derive'
 
 /**
@@ -117,6 +117,11 @@ export async function seed(db: Awaited<ReturnType<typeof createDatabase>>) {
     { jobId: retrato.id, date: '2025-06-16', minutes: 240, kind: 'edit' },
     { jobId: trail.id, date: '2025-10-05', minutes: 300, kind: 'shoot' },
     { jobId: trail.id, date: '2025-10-05', minutes: 90, kind: 'travel' },
+  ])
+
+  await db.insert(expenses).values([
+    { jobId: trail.id, amountCents: 3200, description: 'Gasolina y peajes', category: 'travel', spentOn: '2025-10-05' },
+    { jobId: trail.id, amountCents: 1800, description: 'Comida en ruta', category: 'travel', spentOn: '2025-10-05' },
   ])
 
   // Fotos de ejemplo para la galería entregada. Alternan vertical y horizontal

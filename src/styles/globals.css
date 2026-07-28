@@ -1366,6 +1366,13 @@ body {
     font-family: var(--font-display); font-style: italic; font-weight: var(--fw-black);
     font-stretch: 88%; font-size: var(--fs-display-s); color: var(--pm-emerald-deep);
   }
+  .pm-money__h2 {
+    font-family: var(--font-serif); font-size: var(--fs-body-l); font-weight: var(--fw-bold);
+    margin: var(--sp-4) 0 var(--sp-3);
+  }
+  .pm-expenseform { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; margin-bottom: var(--sp-4); }
+  .pm-expenseform__amount { max-width: 9rem; }
+  .pm-expenseform__desc { min-width: 12rem; flex: 1 1 12rem; }
 }
 
 

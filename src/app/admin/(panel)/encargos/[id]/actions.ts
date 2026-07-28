@@ -17,8 +17,16 @@ import {
 } from '@/db/queries/admin-gallery'
 import { generatePin, generateToken } from '@/lib/gallery/token'
 import { hashPin } from '@/lib/gallery/pin'
+import { addExpense } from '@/db/queries/expenses'
 import { ADMIN_COOKIE, verifySession } from '@/lib/auth/admin'
-import { JOB_STATUSES, TIME_ENTRY_KINDS, type JobStatus, type TimeEntryKind } from '@/db/schema'
+import {
+  EXPENSE_CATEGORIES,
+  JOB_STATUSES,
+  TIME_ENTRY_KINDS,
+  type ExpenseCategory,
+  type JobStatus,
+  type TimeEntryKind,
+} from '@/db/schema'
 
 /** Caducidad por defecto: noventa días desde la entrega. Ver docs/plan. */
 const GALLERY_DAYS = 90
@@ -100,6 +108,27 @@ export async function revokeGalleryAction(jobId: string): Promise<GalleryActionR
   await revokeGallery(database, gallery.id)
   revalidatePath(`/admin/encargos/${jobId}`)
   return { ok: true }
+}
+
+export async function addExpenseAction(jobId: string, formData: FormData) {
+  const email = await requireEmail()
+  // El importe entra en euros y se guarda en céntimos, sin flotantes que arrastren
+  // error: se redondea al céntimo más cercano.
+  const euros = Number(formData.get('amount'))
+  const description = String(formData.get('description') ?? '').trim()
+  const spentOn = String(formData.get('spentOn') ?? '')
+  const catRaw = String(formData.get('category') ?? '')
+  const category: ExpenseCategory = (EXPENSE_CATEGORIES as readonly string[]).includes(catRaw)
+    ? (catRaw as ExpenseCategory)
+    : 'other'
+  // Un gasto sin importe, sin concepto o sin fecha no se guarda.
+  if (!description || !spentOn || !Number.isFinite(euros) || euros <= 0) return
+  await addExpense(
+    await db(),
+    { jobId, amountCents: Math.round(euros * 100), description, category, spentOn },
+    email,
+  )
+  revalidatePath(`/admin/encargos/${jobId}`)
 }
 
 export async function addTimeAction(jobId: string, formData: FormData) {
