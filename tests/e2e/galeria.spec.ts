@@ -37,6 +37,16 @@ test('el PIN correcto abre la galería, y sin sesión no se entra', async ({ pag
   await page.waitForURL(new RegExp(`/c/${TOKEN}/galeria$`))
   await expect(page.locator('.pm-gallery-view')).toBeVisible()
 
+  // La navegación lleva al encargo, que muestra la línea de tiempo y lo acordado.
+  // Este encargo es de fotos, así que no aparece el enlace de vídeo.
+  await expect(page.getByRole('link', { name: 'Vídeo' })).toHaveCount(0)
+  await page.getByRole('link', { name: 'Tu encargo' }).click()
+  await page.waitForURL(new RegExp(`/c/${TOKEN}/encargo$`))
+  await expect(page.getByRole('heading', { level: 2, name: 'Lo acordado' })).toBeVisible()
+  await expect(page.getByText('40 fotos editadas')).toBeVisible()
+  await page.getByRole('link', { name: 'Entrega' }).click()
+  await page.waitForURL(new RegExp(`/c/${TOKEN}/galeria$`))
+
   // La rejilla trae fotos y cada miniatura carga de verdad desde la ruta.
   const tiles = page.locator('.pm-photos__tile')
   await expect(tiles.first()).toBeVisible()

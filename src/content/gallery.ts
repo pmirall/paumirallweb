@@ -29,6 +29,9 @@ export const galleryView = {
   previous: 'Foto anterior',
   next: 'Foto siguiente',
   markFavorite: 'Marcar como favorita',
+  navGallery: 'Entrega',
+  navJob: 'Tu encargo',
+  navVideo: 'Vídeo',
   unmarkFavorite: 'Quitar de favoritas',
   selectionTitle: 'Tu selección',
   selectionCount: (n: number) =>
@@ -39,4 +42,28 @@ export const galleryView = {
   selectionDone: (n: number) =>
     `Recibido. Me llegan ${n === 1 ? 'tu foto' : `tus ${n} fotos`} y me pongo con ellas.`,
   selectionError: 'No se ha podido guardar. Vuelve a intentarlo en un momento.',
+} as const
+
+export const videoView = {
+  eyebrow: 'Vídeo',
+  soon: 'El vídeo se reproduce aquí en cuanto esté montado y subido.',
+} as const
+
+export const jobView = {
+  eyebrow: 'Tu encargo',
+  timelineTitle: 'Cómo va',
+  shoot: 'Rodaje',
+  due: 'Entrega prevista',
+  delivered: 'Entregado',
+  pendingDelivery: 'En preparación',
+  deliverablesTitle: 'Lo acordado',
+  deliverablesEmpty: 'Todavía no hay nada anotado aquí.',
+  delivered1: 'Listo',
+  pending1: 'En camino',
+  kinds: {
+    photos: 'Fotos',
+    video: 'Vídeo',
+    reel: 'Reel',
+    raw: 'Archivos en bruto',
+  },
 } as const

@@ -1362,6 +1362,53 @@ body {
   .pm-client__mark img { width: 150px; height: auto; }
   .pm-client__main { flex: 1; padding: var(--sp-8) var(--page-pad); width: 100%; max-width: var(--maxw-page); margin-inline: auto; }
 
+  /* --- navegación de la zona de cliente --- */
+  .pm-clientnav {
+    display: flex; flex-wrap: wrap; gap: var(--sp-4);
+    margin-bottom: var(--sp-6); padding-bottom: var(--sp-3);
+    border-bottom: var(--border-w) solid var(--border-hairline);
+  }
+  .pm-clientnav__link {
+    min-height: 44px; display: inline-flex; align-items: center;
+    font-family: var(--font-ui); font-weight: var(--fw-bold); font-stretch: 88%;
+    font-size: var(--fs-caption); letter-spacing: var(--tracking-label); text-transform: uppercase;
+    color: var(--text-muted); text-decoration: none;
+    border-bottom: var(--border-w-thick) solid transparent;
+  }
+  .pm-clientnav__link:hover { color: var(--pm-ink); }
+  .pm-clientnav__link[aria-current='page'] { color: var(--pm-ink); border-bottom-color: var(--pm-teal); }
+
+  /* --- el encargo visto por el cliente --- */
+  .pm-jobview__title {
+    font-family: var(--font-display); font-style: italic; font-weight: var(--fw-black);
+    font-stretch: 88%; font-size: var(--fs-display-m); line-height: var(--lh-heading);
+    letter-spacing: var(--tracking-display); margin: var(--sp-2) 0 var(--sp-6);
+  }
+  .pm-jobview__h2 {
+    font-family: var(--font-serif); font-size: var(--fs-body-l); font-weight: var(--fw-bold);
+    margin: var(--sp-6) 0 var(--sp-4);
+  }
+  .pm-timeline { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-3); }
+  .pm-timeline__step {
+    display: flex; justify-content: space-between; gap: var(--sp-3);
+    padding: var(--sp-3) var(--sp-4);
+    background: var(--surface-card); border-left: var(--border-w-thick) solid var(--border-hairline);
+  }
+  .pm-timeline__step[data-done='true'] { border-left-color: var(--pm-teal); }
+  .pm-timeline__label {
+    font-family: var(--font-ui); font-weight: var(--fw-bold); font-stretch: 88%;
+    font-size: var(--fs-caption); letter-spacing: var(--tracking-label); text-transform: uppercase;
+    color: var(--text-muted);
+  }
+  .pm-timeline__value { font: var(--type-body); }
+  .pm-deliverables { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-3); }
+  .pm-deliverables__item {
+    display: flex; justify-content: space-between; gap: var(--sp-3); align-items: center;
+    padding: var(--sp-3) var(--sp-4); background: var(--surface-card);
+  }
+  .pm-deliverables__what { display: block; font: var(--type-body); }
+  .pm-deliverables__kind { display: block; font-size: var(--fs-caption); color: var(--text-faint); }
+
   /* --- puerta --- */
   .pm-gate { max-width: 34rem; margin: var(--sp-8) auto; }
   .pm-gate__title {
