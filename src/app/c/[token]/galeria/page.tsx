@@ -2,6 +2,7 @@ import { notFound, redirect } from 'next/navigation'
 import { listGalleryAssets, touchGalleryAccess } from '@/db/queries/gallery'
 import { listActiveFavoriteIds } from '@/db/queries/favorites'
 import { hasVideoDeliverable } from '@/db/queries/client-job'
+import { hasInvoiceForJob } from '@/db/queries/invoices'
 import { requireGallerySession } from '@/lib/gallery/guard'
 import { Eyebrow } from '@/components/ui'
 import { GalleryGrid } from '@/components/client/GalleryGrid'
@@ -29,10 +30,11 @@ export default async function GalleryPage({ params }: { params: Promise<{ token:
   const assets = await listGalleryAssets(database, gallery.jobId)
   const favorites = await listActiveFavoriteIds(database, gallery.id)
   const hasVideo = await hasVideoDeliverable(database, gallery.jobId)
+  const hasInvoice = await hasInvoiceForJob(database, gallery.jobId)
 
   return (
     <section className="pm-gallery-view">
-      <ClientNav token={token} active="gallery" hasVideo={hasVideo} />
+      <ClientNav token={token} active="gallery" hasVideo={hasVideo} hasInvoice={hasInvoice} />
       <Eyebrow surface="bone">{galleryView.eyebrow}</Eyebrow>
 
       {gallery.watermark ? (

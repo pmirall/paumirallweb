@@ -32,6 +32,7 @@ export const galleryView = {
   navGallery: 'Entrega',
   navJob: 'Tu encargo',
   navVideo: 'Vídeo',
+  navInvoice: 'Factura',
   unmarkFavorite: 'Quitar de favoritas',
   selectionTitle: 'Tu selección',
   selectionCount: (n: number) =>
@@ -47,6 +48,20 @@ export const galleryView = {
 export const videoView = {
   eyebrow: 'Vídeo',
   soon: 'El vídeo se reproduce aquí en cuanto esté montado y subido.',
+} as const
+
+export const invoiceView = {
+  eyebrow: 'Factura',
+  total: 'Total',
+  pending: 'Pendiente de pago',
+  paid: 'Pagada',
+  paidBody: 'Recibido y todo en orden. Gracias.',
+  pending1: 'Queda por pagar',
+  pdf: 'Descargar la factura',
+  dueLabel: 'Vence el',
+  howToPay:
+    'Puedes pagar en efectivo, por transferencia o con tarjeta cuando quedemos. Escríbeme y cerramos el detalle.',
+  contact: 'paumirallstudio@gmail.com',
 } as const
 
 export const jobView = {

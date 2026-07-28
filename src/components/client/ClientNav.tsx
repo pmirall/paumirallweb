@@ -10,17 +10,22 @@ export function ClientNav({
   token,
   active,
   hasVideo,
+  hasInvoice,
 }: {
   token: string
-  active: 'gallery' | 'job' | 'video'
+  active: 'gallery' | 'job' | 'video' | 'invoice'
   hasVideo: boolean
+  hasInvoice?: boolean
 }) {
-  const items: Array<{ key: 'gallery' | 'job' | 'video'; href: string; label: string }> = [
+  const items: Array<{ key: 'gallery' | 'job' | 'video' | 'invoice'; href: string; label: string }> = [
     { key: 'gallery', href: `/c/${token}/galeria`, label: galleryView.navGallery },
     { key: 'job', href: `/c/${token}/encargo`, label: galleryView.navJob },
   ]
   if (hasVideo) {
     items.push({ key: 'video', href: `/c/${token}/video`, label: galleryView.navVideo })
+  }
+  if (hasInvoice) {
+    items.push({ key: 'invoice', href: `/c/${token}/factura`, label: galleryView.navInvoice })
   }
 
   return (

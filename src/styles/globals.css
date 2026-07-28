@@ -1470,6 +1470,23 @@ body {
   .pm-deliverables__what { display: block; font: var(--type-body); }
   .pm-deliverables__kind { display: block; font-size: var(--fs-caption); color: var(--text-faint); }
 
+  /* --- factura del cliente --- */
+  .pm-invoiceview { max-width: 40rem; }
+  .pm-invoiceview__title {
+    font-family: var(--font-display); font-style: italic; font-weight: var(--fw-black);
+    font-stretch: 88%; font-size: var(--fs-display-s); letter-spacing: var(--tracking-display);
+    margin: var(--sp-2) 0 var(--sp-3);
+  }
+  .pm-invoiceview__status { margin-bottom: var(--sp-5); }
+  .pm-invoiceview__facts { display: flex; flex-wrap: wrap; gap: var(--sp-6); margin: 0 0 var(--sp-5); }
+  .pm-invoiceview__facts dt {
+    font-family: var(--font-ui); font-weight: var(--fw-bold); font-stretch: 88%;
+    font-size: var(--fs-caption); letter-spacing: var(--tracking-label); text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: var(--sp-1);
+  }
+  .pm-invoiceview__facts dd { margin: 0; font-size: var(--fs-body-l); }
+  .pm-invoiceview__body { font: var(--type-body); color: var(--pm-graphite); margin: var(--sp-4) 0 0; max-width: var(--measure); }
+
   /* --- presupuesto público --- */
   .pm-quote { max-width: 44rem; margin-inline: auto; }
   .pm-quote__title {

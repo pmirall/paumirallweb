@@ -5,6 +5,7 @@ import {
   hasVideoDeliverable,
   listClientDeliverables,
 } from '@/db/queries/client-job'
+import { hasInvoiceForJob } from '@/db/queries/invoices'
 import { getGalleryByToken } from '@/db/queries/gallery'
 import { db } from '@/db/client'
 import { Eyebrow, Tag } from '@/components/ui'
@@ -29,6 +30,7 @@ export default async function ClientJobPage({ params }: { params: Promise<{ toke
   if (!job) notFound()
   const deliverables = await listClientDeliverables(database, gallery.jobId)
   const hasVideo = await hasVideoDeliverable(database, gallery.jobId)
+  const hasInvoice = await hasInvoiceForJob(database, gallery.jobId)
 
   const steps: Array<{ label: string; value: string; done: boolean }> = []
   if (job.shootDate) steps.push({ label: jobView.shoot, value: formatDate(job.shootDate), done: true })
@@ -46,7 +48,7 @@ export default async function ClientJobPage({ params }: { params: Promise<{ toke
 
   return (
     <section className="pm-jobview">
-      <ClientNav token={token} active="job" hasVideo={hasVideo} />
+      <ClientNav token={token} active="job" hasVideo={hasVideo} hasInvoice={hasInvoice} />
       <Eyebrow surface="bone">{jobView.eyebrow}</Eyebrow>
       <h1 className="pm-jobview__title">{job.title}</h1>
 

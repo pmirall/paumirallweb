@@ -1,5 +1,5 @@
 import { createDatabase } from './client'
-import { galleries, mediaAssets, mediaDerivatives, quoteLines, quotes } from './schema'
+import { galleries, invoices, mediaAssets, mediaDerivatives, quoteLines, quotes } from './schema'
 import { hashPin } from '@/lib/gallery/pin'
 import { clients, deliverables, expenses, jobPublications, jobs, leads, timeEntries } from './schema'
 import { deriveAsset } from '@/lib/media/derive'
@@ -167,6 +167,25 @@ export async function seed(db: Awaited<ReturnType<typeof createDatabase>>) {
     ])
   }
 
+  // Una factura emitida y sin pagar sobre el encargo entregado, para ver la
+  // pantalla de factura del cliente y el estado pendiente. Su galería lleva la
+  // marca de agua, coherente con la regla.
+  await db.insert(invoices).values({
+    number: 'F-2026-001',
+    jobId: retrato.id,
+    clientId: retrato.clientId,
+    provider: 'fake',
+    providerInvoiceId: 'fake-seed-F-0001',
+    status: 'issued',
+    subtotalCents: 32000,
+    taxCents: 6720,
+    totalCents: 38720,
+    issuedAt: new Date(),
+    dueAt: '2026-08-31',
+    pdfUrl: 'https://facturas.ejemplo/fake-seed-F-0001.pdf',
+    verificationUrl: 'https://facturas.ejemplo/verificar/fake-seed-F-0001',
+  })
+
   // Fotos de ejemplo para la galería entregada. Alternan vertical y horizontal
   // para que la rejilla se vea como una entrega real. Las derivadas son
   // marcadores generados; la derivación real llega con Drive de verdad.
@@ -213,6 +232,8 @@ export async function seed(db: Awaited<ReturnType<typeof createDatabase>>) {
       token: 'DEV0GALERIA0JULIA',
       pinHash: await hashPin('4271'),
       expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+      // Factura emitida y sin pagar: la marca de agua está puesta por la regla.
+      watermark: true,
     },
     {
       jobId: video.id,

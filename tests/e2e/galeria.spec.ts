@@ -64,10 +64,30 @@ test('el PIN correcto abre la galería, y sin sesión no se entra', async ({ pag
   await expect(dialog).toBeHidden()
 })
 
+test('la factura del cliente muestra el importe y el estado pendiente', async ({ page }, testInfo) => {
+  test.skip(testInfo.project.name !== 'chromium', 'inicia sesión de galería')
+  await page.goto(`/c/${TOKEN}`)
+  await page.fill('#pin', '4271')
+  await page.getByRole('button', { name: 'Entrar' }).click()
+  await page.waitForURL(new RegExp(`/c/${TOKEN}/galeria$`))
+
+  await page.getByRole('link', { name: 'Factura' }).click()
+  await page.waitForURL(new RegExp(`/c/${TOKEN}/factura$`))
+  await expect(page.getByRole('heading', { level: 1, name: 'F-2026-001' })).toBeVisible()
+  await expect(page.getByText('Pendiente de pago')).toBeVisible()
+  // 387,20 € aparece como total y como pendiente; basta con que salga.
+  await expect(page.getByText('387,20', { exact: false }).first()).toBeVisible()
+})
+
 test('una foto no se sirve sin sesión de la galería', async ({ page }) => {
   // Se necesita un id real; sin sesión la ruta responde 404 igualmente.
   const r = await page.request.get(`/c/${TOKEN}/foto/00000000-0000-0000-0000-000000000000?v=thumb`)
   expect(r.status()).toBe(404)
+})
+
+test('el webhook de Stripe está inactivo mientras no haya claves', async ({ page }) => {
+  const r = await page.request.post('/api/pagos/stripe', { data: '{}' })
+  expect(r.status()).toBe(503)
 })
 
 test('una galería caducada muestra la pantalla de caducidad, no el PIN', async ({ page }) => {

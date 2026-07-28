@@ -195,3 +195,36 @@ export async function listPayments(db: Db, invoiceId: string) {
     .where(eq(payments.invoiceId, invoiceId))
     .orderBy(payments.paidAt)
 }
+
+/**
+ * La factura que ve el cliente en su zona: la más reciente que no esté anulada,
+ * con solo lo que puede ver. Devuelve undefined si el encargo no tiene factura.
+ */
+export async function getClientInvoiceForJob(db: Db, jobId: string) {
+  const [inv] = await db
+    .select({
+      id: invoices.id,
+      number: invoices.number,
+      status: invoices.status,
+      totalCents: invoices.totalCents,
+      pdfUrl: invoices.pdfUrl,
+      dueAt: invoices.dueAt,
+    })
+    .from(invoices)
+    .where(and(eq(invoices.jobId, jobId), sql`${invoices.status} <> 'void'`))
+    .orderBy(desc(invoices.createdAt))
+    .limit(1)
+  if (!inv) return undefined
+  const paidCents = await sumPayments(db, inv.id)
+  return { ...inv, paidCents }
+}
+
+/** ¿El encargo tiene alguna factura viva? Decide si aparece la pantalla. */
+export async function hasInvoiceForJob(db: Db, jobId: string): Promise<boolean> {
+  const rows = await db
+    .select({ id: invoices.id })
+    .from(invoices)
+    .where(and(eq(invoices.jobId, jobId), sql`${invoices.status} <> 'void'`))
+    .limit(1)
+  return rows.length > 0
+}
