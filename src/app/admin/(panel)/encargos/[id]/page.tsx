@@ -6,6 +6,7 @@ import { listTimeEntries, totalMinutesByJob } from '@/db/queries/time-entries'
 import { hasPendingDeliverables } from '@/db/queries/jobs'
 import { getGalleryForJob, listSubmittedFavorites } from '@/db/queries/admin-gallery'
 import { isGalleryOpen } from '@/lib/gallery/status'
+import { computeProfitability } from '@/lib/finance/profitability'
 import { env } from '@/lib/env'
 import { PageHeader } from '@/components/admin/PageHeader'
 import { GalleryPanel } from '@/components/admin/GalleryPanel'
@@ -253,7 +254,43 @@ export default async function JobDetailPage({
         />
       ) : null}
       {active === 'dinero' ? (
-        <EmptyState level={2} title={jobDetail.tabs.dinero} body={jobDetail.moneyLater} />
+        (() => {
+          const money = computeProfitability(job.budgetCents, totalMinutes)
+          return (
+            <div className="pm-money">
+              <dl className="pm-money__grid">
+                <div>
+                  <dt>{jobDetail.money.budget}</dt>
+                  <dd>
+                    {job.budgetCents != null ? formatEuros(job.budgetCents) : jobDetail.money.noBudget}
+                  </dd>
+                </div>
+                <div>
+                  <dt>{jobDetail.money.hours}</dt>
+                  <dd>{formatDuration(totalMinutes)}</dd>
+                </div>
+                <div>
+                  <dt>{jobDetail.money.perHour}</dt>
+                  <dd>
+                    {money.eurosPerHour != null ? (
+                      <strong className="pm-money__rate">
+                        {formatEuros(Math.round(money.eurosPerHour * 100))}
+                      </strong>
+                    ) : (
+                      <span className="pm-field__hint">{jobDetail.money.needHours}</span>
+                    )}
+                  </dd>
+                </div>
+              </dl>
+              {money.eurosPerHour != null ? (
+                <p className="pm-field__hint">{jobDetail.money.perHourHint}</p>
+              ) : null}
+              <p className="pm-notice" role="note">
+                {jobDetail.money.invoiceLater}
+              </p>
+            </div>
+          )
+        })()
       ) : null}
 
       {active === 'notas' ? (

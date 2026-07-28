@@ -137,6 +137,21 @@ test('anotar horas suma al total del encargo', async ({ page }, testInfo) => {
   await expect(page.locator('.pm-time-total strong')).not.toHaveText(before ?? '')
 })
 
+test('la pestaña de dinero da el euros por hora del encargo', async ({ page }) => {
+  await page.goto('/admin/login')
+  await page.getByRole('button', { name: 'Entrar en modo desarrollo' }).click()
+  await page.waitForURL('**/admin')
+
+  await page.goto('/admin/encargos')
+  await page.getByText('Trail Serra de Tramuntana').click()
+  await page.waitForURL(/\/admin\/encargos\/.+/)
+  await page.getByRole('link', { name: 'Dinero' }).click()
+
+  await expect(page.getByText('Euros por hora')).toBeVisible()
+  // Con presupuesto y horas sembrados, sale un número en euros, no el aviso.
+  await expect(page.locator('.pm-money__rate')).toContainText('€')
+})
+
 test('la pestaña de galería crea el enlace, muestra el PIN una vez y revoca', async ({
   page,
 }, testInfo) => {

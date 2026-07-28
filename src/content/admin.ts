@@ -140,7 +140,15 @@ export const jobDetail = {
   timeNote: 'Nota',
   timeKinds: { shoot: 'Rodaje', edit: 'Edición', travel: 'Viaje', admin: 'Gestión' },
   filesLaterr: 'La carpeta de Drive vinculada llega en la fase 2.',
-  moneyLater: 'Presupuesto, factura, gastos y rentabilidad llegan en la fase 5.',
+  money: {
+    budget: 'Presupuesto',
+    noBudget: 'Sin presupuesto anotado.',
+    hours: 'Horas dedicadas',
+    perHour: 'Euros por hora',
+    perHourHint: 'El importe entre las horas que has metido en este encargo.',
+    needHours: 'Anota horas para ver el euros por hora.',
+    invoiceLater: 'La factura y los gastos llegan cuando se conecte el proveedor de facturación.',
+  },
   gallery: {
     none: 'Este encargo todavía no tiene galería.',
     create: 'Crear galería',

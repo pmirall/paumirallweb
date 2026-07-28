@@ -1349,6 +1349,23 @@ body {
     letter-spacing: 0.3em; color: var(--pm-emerald-deep); font-weight: var(--fw-bold);
   }
   .pm-freshpin__note { font-size: var(--fs-body-s); color: var(--pm-emerald-deep); }
+
+  /* --- dinero en la ficha de encargo --- */
+  .pm-money { display: flex; flex-direction: column; gap: var(--sp-4); max-width: var(--maxw-prose); }
+  .pm-money__grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: var(--sp-4); margin: 0;
+  }
+  .pm-money__grid dt {
+    font-family: var(--font-ui); font-weight: var(--fw-bold); font-stretch: 88%;
+    font-size: var(--fs-caption); letter-spacing: var(--tracking-label); text-transform: uppercase;
+    color: var(--text-muted); margin-bottom: var(--sp-1);
+  }
+  .pm-money__grid dd { margin: 0; font: var(--type-body); }
+  .pm-money__rate {
+    font-family: var(--font-display); font-style: italic; font-weight: var(--fw-black);
+    font-stretch: 88%; font-size: var(--fs-display-s); color: var(--pm-emerald-deep);
+  }
 }
 
 
