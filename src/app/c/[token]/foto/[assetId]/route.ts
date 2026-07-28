@@ -1,8 +1,6 @@
-import { cookies } from 'next/headers'
 import { z } from 'zod'
-import { db } from '@/db/client'
-import { findValidSession, getGalleryByToken, getGalleryDerivative } from '@/db/queries/gallery'
-import { GALLERY_COOKIE, readGallerySession } from '@/lib/gallery/session'
+import { getGalleryDerivative } from '@/db/queries/gallery'
+import { requireGallerySession } from '@/lib/gallery/guard'
 import { storage } from '@/lib/storage'
 
 export const dynamic = 'force-dynamic'
@@ -34,14 +32,11 @@ export async function GET(
   // y Postgres respondería con un error, no con una foto. Mismo 404 para todo.
   if (!idSchema.safeParse(assetId).success) return notFound()
 
-  const database = await db()
-  const gallery = await getGalleryByToken(database, token)
-  if (!gallery || gallery.status !== 'active') return notFound()
-
-  const store = await cookies()
-  const claim = await readGallerySession(store.get(GALLERY_COOKIE)?.value)
-  const session = claim ? await findValidSession(database, claim.sessionId, new Date()) : null
-  if (!session || session.galleryId !== gallery.id) return notFound()
+  // Una sola comprobación: galería abierta (activa y no caducada) y sesión válida
+  // de esta misma galería. La caducidad se aplica aquí, no solo en la puerta.
+  const ctx = await requireGallerySession(token)
+  if (!ctx) return notFound()
+  const { database, gallery } = ctx
 
   // Con la factura pendiente, solo existe la versión con marca. La limpia no se
   // sirve aunque se pida por su nombre: se bloquea en el servidor.

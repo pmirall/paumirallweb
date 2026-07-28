@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation'
 import { db } from '@/db/client'
 import { getGalleryByToken } from '@/db/queries/gallery'
 import { getJobWithClient } from '@/db/queries/jobs'
+import { isGalleryOpen } from '@/lib/gallery/status'
 import { Eyebrow } from '@/components/ui'
 import { gate } from '@/content/gallery'
 import { GateForm } from './GateForm'
@@ -17,7 +18,7 @@ export default async function GatePage({ params }: { params: Promise<{ token: st
   // Token inválido o galería revocada: 404, sin confirmar que exista un panel.
   if (!gallery || gallery.status === 'revoked') notFound()
 
-  const expired = gallery.status === 'expired' || gallery.expiresAt.getTime() < Date.now()
+  const expired = !isGalleryOpen(gallery, new Date())
   const job = await getJobWithClient(database, gallery.jobId)
   const name = job?.jobs.title ?? ''
 

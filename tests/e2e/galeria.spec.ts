@@ -60,6 +60,12 @@ test('una foto no se sirve sin sesión de la galería', async ({ page }) => {
   expect(r.status()).toBe(404)
 })
 
+test('una galería caducada muestra la pantalla de caducidad, no el PIN', async ({ page }) => {
+  await page.goto('/c/DEV0GALERIA0VENCIDA')
+  await expect(page.getByRole('heading', { name: 'Esta galería ha caducado' })).toBeVisible()
+  await expect(page.locator('#pin')).toHaveCount(0)
+})
+
 test('marcar favoritas y enviar la selección', async ({ page }, testInfo) => {
   test.skip(testInfo.project.name !== 'chromium', 'muta datos; un solo proyecto')
 

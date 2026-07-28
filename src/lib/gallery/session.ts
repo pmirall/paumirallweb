@@ -40,12 +40,23 @@ async function sign(payload: string): Promise<string> {
   return b64url(mac)
 }
 
-/** galleryId.sessionId.expiración.firma */
-export async function issueGallerySession(galleryId: string, sessionId: string): Promise<{
-  cookie: string
-  expiresAt: Date
-}> {
-  const expires = Date.now() + MAX_AGE_SECONDS * 1000
+/**
+ * galleryId.sessionId.expiración.firma
+ *
+ * La sesión no puede vivir más que la galería: se acota a la fecha de caducidad
+ * de la galería si esta llega antes de los treinta días. Así una sesión emitida
+ * el último día no sigue abriendo fotos un mes después de caducar la entrega.
+ */
+export async function issueGallerySession(
+  galleryId: string,
+  sessionId: string,
+  galleryExpiresAt?: Date,
+): Promise<{ cookie: string; expiresAt: Date }> {
+  const maxExpires = Date.now() + MAX_AGE_SECONDS * 1000
+  const expires =
+    galleryExpiresAt && galleryExpiresAt.getTime() < maxExpires
+      ? galleryExpiresAt.getTime()
+      : maxExpires
   const payload = `${galleryId}.${sessionId}.${expires}`
   return { cookie: `${payload}.${await sign(payload)}`, expiresAt: new Date(expires) }
 }

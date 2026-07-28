@@ -157,12 +157,22 @@ export async function seed(db: Awaited<ReturnType<typeof createDatabase>>) {
 
   // Una galería activa para el encargo entregado, con PIN 4271 y token fijo en
   // desarrollo. En producción el token es aleatorio y el PIN se envía por correo.
-  await db.insert(galleries).values({
-    jobId: retrato.id,
-    token: 'DEV0GALERIA0JULIA',
-    pinHash: await hashPin('4271'),
-    expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-  })
+  // Y una caducada, para ver la pantalla de caducidad y probar que una galería
+  // vencida no sirve fotos aunque siga en estado activo.
+  await db.insert(galleries).values([
+    {
+      jobId: retrato.id,
+      token: 'DEV0GALERIA0JULIA',
+      pinHash: await hashPin('4271'),
+      expiresAt: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+    },
+    {
+      jobId: video.id,
+      token: 'DEV0GALERIA0VENCIDA',
+      pinHash: await hashPin('4271'),
+      expiresAt: new Date(Date.now() - 24 * 60 * 60 * 1000),
+    },
+  ])
 
   await db.insert(leads).values([
     {

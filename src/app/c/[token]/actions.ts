@@ -16,6 +16,7 @@ import {
 import { verifyPin } from '@/lib/gallery/pin'
 import { generateToken } from '@/lib/gallery/token'
 import { GALLERY_COOKIE, galleryCookieOptions, issueGallerySession } from '@/lib/gallery/session'
+import { isGalleryOpen } from '@/lib/gallery/status'
 import { env } from '@/lib/env'
 
 const pinSchema = z.string().regex(/^\d{4}$/)
@@ -43,6 +44,7 @@ export type GateResult =
   | { ok: true }
   | { ok: false; reason: 'wrong'; attemptsLeft: number }
   | { ok: false; reason: 'blocked' }
+  | { ok: false; reason: 'expired' }
 
 export async function submitPin(token: string, formData: FormData): Promise<GateResult> {
   const database = await db()
@@ -50,10 +52,16 @@ export async function submitPin(token: string, formData: FormData): Promise<Gate
   const now = new Date()
   const ipHash = await hashIp()
 
-  // Un token inválido no se distingue de un PIN erróneo: no se confirma que la
-  // galería exista. Se responde con la misma forma.
-  if (!gallery || gallery.status !== 'active') {
+  // Un token inválido o una galería revocada no se distinguen de un PIN erróneo:
+  // no se confirma que la galería exista. Se responde con la misma forma.
+  if (!gallery || gallery.status === 'revoked') {
     return { ok: false, reason: 'wrong', attemptsLeft: 5 }
+  }
+
+  // Una galería caducada no acepta PIN: sería una sesión que ya no debería abrir
+  // nada. La caducidad ya es pública en la puerta, así que decirlo aquí no filtra.
+  if (!isGalleryOpen(gallery, now)) {
+    return { ok: false, reason: 'expired' }
   }
 
   // Corte rápido si ya está bloqueado, para no acumular filas ni verificar.
@@ -83,7 +91,7 @@ export async function submitPin(token: string, formData: FormData): Promise<Gate
   // Acierto: el intento se marca correcto, lo que limpia la ventana de fallos.
   await markAttemptSuccess(database, attemptId)
   const sessionId = generateToken()
-  const { cookie, expiresAt } = await issueGallerySession(gallery.id, sessionId)
+  const { cookie, expiresAt } = await issueGallerySession(gallery.id, sessionId, gallery.expiresAt)
   const ua = (await headers()).get('user-agent')
   await createGallerySession(database, gallery.id, sessionId, ipHash, ua, expiresAt)
   const store = await cookies()

@@ -44,6 +44,11 @@ export function GateForm({ token }: { token: string }) {
           {gate.blocked}
         </p>
       ) : null}
+      {!state.ok && state.reason === 'expired' ? (
+        <p className="pm-field__error" role="alert">
+          {gate.expiredBody}
+        </p>
+      ) : null}
 
       <button className={buttonClass('primary')} type="submit" disabled={pending}>
         {gate.submit}
