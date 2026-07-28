@@ -369,10 +369,17 @@ Desde el admin, la pestaña de galería de la ficha de encargo crea la entrega
 enviarlo, da el enlace del cliente, permite generar un PIN nuevo, revoca el acceso
 al instante y lista la selección que el cliente ya ha enviado.
 
+El cliente ve su encargo en `/c/:token/encargo`: la línea de tiempo (rodaje,
+entrega prevista, entregado) y lo acordado, con qué está listo y qué está en
+camino. Nunca ve notas internas, presupuesto ni horas; esos campos ni se
+consultan. Una barra de navegación une la entrega, el encargo y, solo si el
+encargo tiene vídeo, la pantalla de vídeo. `/c/:token/video` responde 404 cuando
+el encargo no tiene vídeo, en vez de una pantalla vacía.
+
 Falta: la descarga individual y el ZIP en alta, atar la marca de agua al estado de
-la factura (hoy es un campo de la galería), y las pantallas de vídeo, encargo y
-factura. La descarga en alta y la derivación real de las fotos dependen de la
-fase 2.
+la factura (hoy es un campo de la galería), el reproductor real de vídeo, y la
+pantalla de factura. La descarga en alta y la derivación real de las fotos
+dependen de la fase 2; la factura, de la fase 5.
 
 ### Qué se hace
 
